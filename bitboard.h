@@ -1,6 +1,4 @@
-#ifndef BITBOARD_H
-#define BITBOARD_H
-
+#pragma once
 #include <cstdint>
 #include "types.h"
 #include <cassert>
@@ -26,5 +24,3 @@ void print_bitboard(BITBOARD bitboard);
 [[nodiscard]] Square poplsb(BITBOARD& bitboard);
 
 template<Direction D> [[nodiscard]] BITBOARD shift(BITBOARD b);
-
-#endif // BITBOARD_H

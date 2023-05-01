@@ -162,19 +162,3 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
     }
 	return os;
 }
-
-BITBOARD Position::get_knight_attacks(Square square) {
-    return get_opp_pieces() & KNIGHT_ATTACKS[square];
-}
-
-BITBOARD Position::get_knight_moves(Square square) {
-    return get_knight_attacks(square) | (get_empty_squares() & KNIGHT_ATTACKS[square]);
-}
-
-BITBOARD Position::get_king_attacks(Square square) {
-    return get_opp_pieces() & KING_ATTACKS[square];
-}
-
-BITBOARD Position::get_king_moves(Square square) {
-    return get_king_attacks(square) | (get_empty_squares() & KING_ATTACKS[square]);
-}

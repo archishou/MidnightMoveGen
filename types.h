@@ -1,6 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
-
+#pragma once
 #include <cstdint>
 
 enum Color : int {
@@ -42,13 +40,15 @@ enum Square : uint32_t {
 	NO_SQUARE
 };
 
+constexpr uint32_t NPIECE_TYPES = 7;
 enum PieceType : uint32_t {
 	PAWN,
 	KNIGHT,
 	BISHOP,
 	ROOK,
 	QUEEN,
-	KING
+	KING,
+	NO_PIECE_TYPE
 };
 
 const uint32_t NDIRS = 8;
@@ -84,4 +84,3 @@ constexpr Rank RANK8 = 7;
 
 using PLY_TYPE = uint32_t;
 using HASH_TYPE = uint64_t;
-#endif // TYPES_H

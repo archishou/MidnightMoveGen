@@ -1,6 +1,4 @@
-#ifndef MOVE_H
-#define MOVE_H
-
+#pragma once
 #include <cstdint>
 #include "types.h"
 
@@ -46,6 +44,3 @@ public:
 };
 
 const Move EMPTY_MOVE = Move();
-
-
-#endif // MOVE_H
