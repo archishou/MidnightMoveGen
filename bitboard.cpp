@@ -51,15 +51,13 @@ void print_bitboard(BITBOARD bitboard) {
 
 #ifdef _WIN64 // MSVC, WIN64
 #include <intrin.h>
-Square lsb(U64 b)
-{
+Square lsb(U64 b) {
     unsigned long idx;
     _BitScanForward64(&idx, b);
     return (Square)idx;
 }
 
-Square msb(U64 b)
-{
+Square msb(U64 b) {
     unsigned long idx;
     _BitScanReverse64(&idx, b);
     return (Square)idx;
@@ -67,33 +65,27 @@ Square msb(U64 b)
 
 #else // MSVC, WIN32
 #include <intrin.h>
-Square lsb(U64 b)
-{
+Square lsb(U64 b) {
     unsigned long idx;
 
-    if (b & 0xffffffff)
-    {
+    if (b & 0xffffffff) {
         _BitScanForward(&idx, int32_t(b));
         return Square(idx);
     }
-    else
-    {
+    else {
         _BitScanForward(&idx, int32_t(b >> 32));
         return Square(idx + 32);
     }
 }
 
-Square msb(U64 b)
-{
+Square msb(U64 b) {
     unsigned long idx;
 
-    if (b >> 32)
-    {
+    if (b >> 32) {
         _BitScanReverse(&idx, int32_t(b >> 32));
         return Square(idx + 32);
     }
-    else
-    {
+    else {
         _BitScanReverse(&idx, int32_t(b));
         return Square(idx);
     }
