@@ -1,10 +1,7 @@
 //
 // Created by Alex Tian on 12/2/2022.
 //
-
-#ifndef BITBOARDENGINE_POSITION_H
-#define BITBOARDENGINE_POSITION_H
-
+#pragma once
 #include <string>
 #include "constants.h"
 #include "types.h"
@@ -16,10 +13,6 @@ class Position {
 public:
 
     Position() = default;
-    BITBOARD all_pieces{};
-    BITBOARD our_pieces{};
-    BITBOARD opp_pieces{};
-    BITBOARD empty_squares{};
 
     BITBOARD pieces[NPIECES]{};
 
@@ -39,11 +32,7 @@ public:
 
     BITBOARD get_all_pieces();
 
-    BITBOARD get_empty_squares();
-
     Piece get_piece_standard(Square square);
-
-    Square get_king_pos(Color color);
 
     void remove_piece(Piece piece, Square square);
     void place_piece(Piece piece, Square square);
@@ -89,5 +78,3 @@ public:
 		return 0;
 	}
 };
-
-#endif //BITBOARDENGINE_POSITION_H

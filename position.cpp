@@ -40,16 +40,8 @@ BITBOARD Position::get_all_pieces() {
     return get_our_pieces() | get_opp_pieces();
 }
 
-BITBOARD Position::get_empty_squares() {
-    return ~get_all_pieces();
-}
-
 Piece Position::get_piece_standard(Square square) {
     return board[square];
-}
-
-Square Position::get_king_pos(Color color) {
-    return lsb(get_pieces(KING, color));
 }
 
 void Position::remove_piece(Piece piece, Square square) {
