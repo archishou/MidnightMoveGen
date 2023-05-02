@@ -20,7 +20,7 @@ void Position::place_piece(Piece piece, Square square) {
 }
 
 void Position::set_fen(const std::string& fen_string) {
-
+	reset();
     std::vector<std::string> fen_tokens = split(fen_string, ' ');
 
     if (fen_tokens.size() < 4) {
@@ -36,10 +36,6 @@ void Position::set_fen(const std::string& fen_string) {
     const std::string full_move_counter = fen_tokens.size() > 4 ? fen_tokens[5] : "1";
 
     side = (player == "w") ? WHITE : BLACK;
-
-    for (int piece = WHITE_PAWN; piece != EMPTY; piece++) {
-        pieces[piece] = 0ULL;
-    }
 
     auto pos = static_cast<Square>(56);
 
@@ -78,8 +74,7 @@ void Position::set_fen(const std::string& fen_string) {
     if (en_passant.size() > 1) {
         auto square = static_cast<Square>((8 - (en_passant[1] - '0')) * 8 + en_passant[0] - 'a');
         ep_square = square;
-    }
-    else {
+    } else {
         ep_square = NO_SQUARE;
     }
 }
@@ -104,7 +99,20 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
 }
 
 void Position::reset() {
+	hash_history.clear();
+	state_history.clear();
 
+	pieces.fill(0);
+	board.fill(EMPTY);
+
+	side = WHITE;
+	ep_square = NO_SQUARE;
+	hash_key = 0;
+	game_ply = 0;
+}
+
+std::string Position::fen() {
+	return "incomplete";
 }
 
 template<Color color>

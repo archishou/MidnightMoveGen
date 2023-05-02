@@ -13,6 +13,7 @@
 class PositionState {
 public:
 	PositionState() = default;
+	~PositionState() = default;
 
 private:
 	Bitboard from_to{};
@@ -22,24 +23,32 @@ private:
 };
 
 class Position {
+private:
+	static constexpr i16 POSITION_STATE_SIZE = 1000;
+
+	Stack<PositionState, POSITION_STATE_SIZE> state_history{};
+
+	void remove_piece(Piece piece, Square square);
+	void place_piece(Piece piece, Square square);
+
+	void reset();
 
 public:
 
     Position() = default;
 
-    Bitboard pieces[NPIECES]{};
-
-    Piece board[NSQUARES]{};
+	std::array<Bitboard, NPIECES> pieces{};
+	std::array<Piece, NSQUARES> board{};
 
     Color side = WHITE;
-
     Square ep_square = NO_SQUARE;
     ZobristHash hash_key = 0;
 	i32 game_ply{};
 
-	Stack<ZobristHash, 1000> hash_history{};
+	Stack<ZobristHash, POSITION_STATE_SIZE> hash_history{};
 
     void set_fen(const std::string& fen);
+	std::string fen();
 
 	template<Color color>
 	void play(Move& move);
@@ -48,10 +57,4 @@ public:
 	void undo(Move& move);
 
 	friend std::ostream& operator<<(std::ostream& os, const Position& p);
-
-private:
-	Stack<PositionState, 1000> state_history{};
-	void remove_piece(Piece piece, Square square);
-	void place_piece(Piece piece, Square square);
-	void reset();
 };

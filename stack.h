@@ -31,6 +31,11 @@ public:
 		return data[length - 1];
 	}
 
+	inline void clear() {
+		for (auto i = 0; i < Capacity; i++) data[i].~T();
+		length = 0;
+	}
+
 	[[nodiscard]] inline auto size() const { return length; }
 
 	[[nodiscard]] inline auto empty() const { return length == 0; }
@@ -47,5 +52,5 @@ public:
 
 private:
 	std::array<T, Capacity> data{};
-	usize length{};
+	usize length = 0;
 };
