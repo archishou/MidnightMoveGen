@@ -24,6 +24,13 @@ public:
 
 class Position {
 private:
+	Color side = WHITE;
+	ZobristHash hash_key = 0;
+	i32 game_ply{};
+
+	std::array<Bitboard, NPIECES> pieces{};
+	std::array<Piece, NSQUARES> board{};
+
 	static constexpr i16 POSITION_STATE_SIZE = 1000;
 
 	Stack<PositionState, POSITION_STATE_SIZE> state_history{};
@@ -36,13 +43,6 @@ private:
 public:
 
     Position() = default;
-
-	std::array<Bitboard, NPIECES> pieces{};
-	std::array<Piece, NSQUARES> board{};
-
-    Color side = WHITE;
-    ZobristHash hash_key = 0;
-	i32 game_ply{};
 
 	Stack<ZobristHash, POSITION_STATE_SIZE> hash_history{};
 	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
