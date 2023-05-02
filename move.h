@@ -4,19 +4,19 @@
 
 using MoveType = u8;
 
-MoveType QUIET		= 0b0000;
-MoveType OO			= 0b0001;
-MoveType OOO		= 0b0010;
+constexpr MoveType QUIET		= 0b0000;
+constexpr MoveType OO			= 0b0001;
+constexpr MoveType OOO			= 0b0010;
 
 // Captures have the 4th bit set.
-MoveType CAPTURE	= 0b1000;
-MoveType ENPASSANT	= 0b1001;
+constexpr MoveType CAPTURE		= 0b1000;
+constexpr MoveType ENPASSANT	= 0b1001;
 
 // Promotions have the 3rd bit set.
-MoveType PR_KNIGHT	= 0b0100;
-MoveType PR_BISHOP	= 0b0101;
-MoveType PR_ROOK	= 0b0110;
-MoveType PR_QUEEN	= 0b0111;
+constexpr MoveType PR_KNIGHT	= 0b0100;
+constexpr MoveType PR_BISHOP	= 0b0101;
+constexpr MoveType PR_ROOK		= 0b0110;
+constexpr MoveType PR_QUEEN		= 0b0111;
 
 class Move {
 private:

@@ -27,23 +27,6 @@ constexpr Color operator~(Color c) {
 	return Color(c ^ BLACK);
 }
 
-constexpr i8 NPIECES = 15;
-enum Piece : u32 {
-	WHITE_PAWN,
-	WHITE_KNIGHT,
-	WHITE_BISHOP,
-	WHITE_ROOK,
-	WHITE_QUEEN,
-	WHITE_KING,
-	BLACK_PAWN = 8,
-	BLACK_KNIGHT,
-	BLACK_BISHOP,
-	BLACK_ROOK,
-	BLACK_QUEEN,
-	BLACK_KING,
-	EMPTY,
-};
-
 constexpr u32 NSQUARES = 64;
 enum Square : u32 {
 	a1, b1, c1, d1, e1, f1, g1, h1,
@@ -57,16 +40,6 @@ enum Square : u32 {
 	NO_SQUARE
 };
 
-constexpr u32 NPIECE_TYPES = 7;
-enum PieceType : u32 {
-	PAWN,
-	KNIGHT,
-	BISHOP,
-	ROOK,
-	QUEEN,
-	KING,
-	NO_PIECE_TYPE
-};
 
 const i8 NDIRS = 8;
 enum Direction : i32 {

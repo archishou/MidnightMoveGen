@@ -24,7 +24,7 @@ public:
 	}
 
 	inline T pop() {
-		return data[length--];
+		return data[length-- -1];
 	}
 
 	inline T peek() {
