@@ -21,7 +21,7 @@ MoveType PR_QUEEN	= 0b0111;
 class Move {
 private:
 	// Bits are arranged as follows
-	// | 1 bits for type | 6 bits for from | 6 bits for to
+	// | 4 bits for type | 6 bits for from | 6 bits for to
 	uint16_t move;
 
 	static constexpr u8 TO_SHIFT = 0;
