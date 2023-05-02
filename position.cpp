@@ -85,36 +85,21 @@ void Position::set_fen(const std::string& fen_string) {
 }
 
 std::ostream& operator << (std::ostream& os, const Position& p) {
-    std::string new_board;
+	const char* s = "   +---+---+---+---+---+---+---+---+\n";
+	const char* t = "     A   B   C   D   E   F   G   H\n";
+	os << t;
+	for (int i = 56; i >= 0; i -= 8) {
+		os << s << " " << i / 8 + 1 << " ";
+		for (int j = 0; j < 8; j++)
+			os << "| " << PIECE_MATCHER[p.board[i + j]] << " ";
+		os << "| " << i / 8 + 1 << "\n";
+	}
+	os << s;
+	os << t << "\n";
 
-    auto pos = static_cast<Square>(56);
-    for (int i = 0; i < 64; i++) {
-        if (i != 0 && i % 8 == 0) {
-            new_board += '\n';
-            pos = static_cast<Square>(pos - 16);
-        }
+	//os << "FEN: " << p.fen() << "\n";
+	//os << "Hash: 0x" << std::hex << p.hash << std::dec << "\n";
 
-        Piece piece = p.board[pos];
-        pos = static_cast<Square>(pos + 1);
-
-        if (piece == EMPTY) {
-            new_board += ". ";
-            continue;
-        }
-
-        new_board += PIECE_MATCHER[piece];
-        new_board += ' ';
-
-    }
-
-    os << new_board << std::endl << std::endl;
-    os << "side: " << p.side << " ep: " << p.ep_square << " castle: " << 0
-              << " hash: " << p.hash_key << std::endl << std::endl;
-
-    for (int piece = WHITE_PAWN; piece < EMPTY; piece++) {
-        os << "Piece: " << piece << " bitboard: \n";
-        print_bitboard(p.pieces[piece]);
-    }
 	return os;
 }
 

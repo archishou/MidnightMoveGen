@@ -27,7 +27,7 @@ constexpr Color operator~(Color c) {
 	return Color(c ^ BLACK);
 }
 
-constexpr i8 NPIECES = 13;
+constexpr i8 NPIECES = 15;
 enum Piece : u32 {
 	WHITE_PAWN,
 	WHITE_KNIGHT,
@@ -35,7 +35,7 @@ enum Piece : u32 {
 	WHITE_ROOK,
 	WHITE_QUEEN,
 	WHITE_KING,
-	BLACK_PAWN,
+	BLACK_PAWN = 8,
 	BLACK_KNIGHT,
 	BLACK_BISHOP,
 	BLACK_ROOK,
@@ -104,5 +104,13 @@ constexpr Rank RANK5 = 4;
 constexpr Rank RANK6 = 5;
 constexpr Rank RANK7 = 6;
 constexpr Rank RANK8 = 7;
+
+const u32 NCASTLING_RIGHTS = 4;
+using CastleRight = u32;
+
+constexpr CastleRight BLACK_OO	= 0b0001;
+constexpr CastleRight BLACK_OOO = 0b0010;
+constexpr CastleRight WHITE_OO	= 0b0100;
+constexpr CastleRight WHITE_OOO = 0b1000;
 
 using ZobristHash = u64;
