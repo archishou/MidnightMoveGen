@@ -1,7 +1,23 @@
 #pragma once
 #include <cstdint>
+#include "stack"
 
-enum Color : int {
+using u8 = std::uint8_t;
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
+
+using i8 = std::int8_t;
+using i16 = std::int16_t;
+using i32 = std::int32_t;
+using i64 = std::int64_t;
+
+using f32 = float;
+using f64 = double;
+
+using usize = std::size_t;
+
+enum Color : u8 {
 	WHITE,
 	BLACK,
 };
@@ -11,7 +27,7 @@ constexpr Color operator~(Color c) {
 }
 
 constexpr uint32_t NPIECES = 13;
-enum Piece : uint32_t {
+enum Piece : u32 {
 	WHITE_PAWN,
 	WHITE_KNIGHT,
 	WHITE_BISHOP,
@@ -27,8 +43,8 @@ enum Piece : uint32_t {
 	EMPTY,
 };
 
-constexpr uint32_t NSQUARES = 64;
-enum Square : uint32_t {
+constexpr u32 NSQUARES = 64;
+enum Square : u32 {
 	a1, b1, c1, d1, e1, f1, g1, h1,
 	a2, b2, c2, d2, e2, f2, g2, h2,
 	a3, b3, c3, d3, e3, f3, g3, h3,
@@ -40,8 +56,8 @@ enum Square : uint32_t {
 	NO_SQUARE
 };
 
-constexpr uint32_t NPIECE_TYPES = 7;
-enum PieceType : uint32_t {
+constexpr u32 NPIECE_TYPES = 7;
+enum PieceType : u32 {
 	PAWN,
 	KNIGHT,
 	BISHOP,
@@ -52,14 +68,20 @@ enum PieceType : uint32_t {
 };
 
 const uint32_t NDIRS = 8;
-enum Direction : int32_t {
+enum Direction : i32 {
 	NORTH = 8, NORTH_EAST = 9, EAST = 1, SOUTH_EAST = -7,
 	SOUTH = -8, SOUTH_WEST = -9, WEST = -1, NORTH_WEST = 7,
 	NORTH_NORTH = 16, SOUTH_SOUTH = -16
 };
 
-const uint32_t NFILES = 8;
-using File = uint32_t;
+template<Color C, Direction D>
+constexpr Direction relative_dir() {
+	if constexpr (C == WHITE) return D;
+	return Direction(-D);
+}
+
+const u32 NFILES = 8;
+using File = u32;
 
 constexpr File AFILE = 0;
 constexpr File BFILE = 1;
@@ -70,8 +92,8 @@ constexpr File FFILE = 5;
 constexpr File GFILE = 6;
 constexpr File HFILE = 7;
 
-const uint32_t NRANKS = 8;
-using Rank = uint32_t;
+const u32 NRANKS = 8;
+using Rank = u32;
 
 constexpr Rank RANK1 = 0;
 constexpr Rank RANK2 = 1;
@@ -82,5 +104,4 @@ constexpr Rank RANK6 = 5;
 constexpr Rank RANK7 = 6;
 constexpr Rank RANK8 = 7;
 
-using PLY_TYPE = uint32_t;
-using HASH_TYPE = uint64_t;
+using ZobristHash = u64;

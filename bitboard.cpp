@@ -7,25 +7,10 @@
 #include "types.h"
 #include "bitboard.h"
 
-template<Direction D>
-BITBOARD shift(BITBOARD b) {
-	if constexpr (D == NORTH) return b << 8;
-	else if constexpr (D == SOUTH) return b >> 8;
-	else if constexpr (D == NORTH + NORTH) return b << 16;
-	else if constexpr (D == SOUTH + SOUTH) return b >> 16;
-	else if constexpr (D == EAST) return (b & ~MASK_FILE[HFILE]) << 1;
-	else if constexpr (D == WEST) return (b & ~MASK_FILE[AFILE]) >> 1;
-	else if constexpr (D == NORTH_EAST) return (b & ~MASK_FILE[HFILE]) << 9;
-	else if constexpr (D == NORTH_WEST) return (b & ~MASK_FILE[AFILE]) << 7;
-	else if constexpr (D == SOUTH_EAST) return (b & ~MASK_FILE[HFILE]) >> 7;
-	else if constexpr (D == SOUTH_WEST) return (b & ~MASK_FILE[AFILE]) >> 9;
-	return 0;
-}
-
-void print_bitboard(BITBOARD bitboard) {
+void print_bitboard(Bitboard bitboard) {
 	std::bitset<64> b(bitboard);
 	std::string str_bitset = b.to_string();
-	for (int i = 0; i < 64; i += 8) {
+	for (i32 i = 0; i < 64; i += 8) {
 		std::string x = str_bitset.substr(i, 8);
 		reverse(x.begin(), x.end());
 		for (auto c : x) std::cout << c << " ";
@@ -37,12 +22,12 @@ void print_bitboard(BITBOARD bitboard) {
 // Compiler specific functions, taken from Stockfish https://github.com/official-stockfish/Stockfish
 #if defined(__GNUC__) // GCC, Clang, ICC
 
-[[nodiscard]] Square lsb(BITBOARD bitboard) {
+[[nodiscard]] Square lsb(Bitboard bitboard) {
 	assert(bitboard);
 	return static_cast<Square>(__builtin_ctzll(bitboard));
 }
 
-[[nodiscard]] Square msb(BITBOARD bitboard) {
+[[nodiscard]] Square msb(Bitboard bitboard) {
 	assert(bitboard);
 	return static_cast<Square>(63 ^ __builtin_clzll(bitboard));
 }
@@ -99,7 +84,7 @@ Square msb(U64 b) {
 
 #endif
 
-[[nodiscard]] uint32_t popcount(BITBOARD bitboard) {
+[[nodiscard]] uint32_t popcount(Bitboard bitboard) {
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 
 	return (uint8_t)_mm_popcnt_u64(mask);
@@ -111,7 +96,7 @@ Square msb(U64 b) {
 #endif
 }
 
-[[nodiscard]] Square poplsb(BITBOARD& bitboard) {
+[[nodiscard]] Square poplsb(Bitboard& bitboard) {
 	Square s = lsb(bitboard);
 	bitboard &= bitboard - 1; // compiler optimizes this to _blsr_u64
 	return static_cast<Square>(s);

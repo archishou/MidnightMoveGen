@@ -4,45 +4,10 @@
 
 #include <stdexcept>
 #include <iostream>
-#include <bitset>
 #include "position.h"
 #include "useful.h"
 #include "bitboard.h"
-#include "tables.h"
-
-BITBOARD Position::get_pieces(Piece piece) {
-    return pieces[piece];
-}
-
-BITBOARD Position::get_pieces(PieceType piece, Color color) {
-    return pieces[piece + color * 6];
-}
-
-BITBOARD Position::get_our_pieces() {
-    return get_pieces(PAWN, side)	|
-           get_pieces(KNIGHT, side)	|
-           get_pieces(BISHOP, side)	|
-           get_pieces(ROOK, side)	|
-           get_pieces(QUEEN, side)	|
-           get_pieces(KING, side);
-}
-
-BITBOARD Position::get_opp_pieces() {
-    return get_pieces(PAWN, ~side)	 |
-           get_pieces(KNIGHT, ~side) |
-           get_pieces(BISHOP, ~side) |
-           get_pieces(ROOK, ~side)	 |
-           get_pieces(QUEEN, ~side)	 |
-           get_pieces(KING, ~side);
-}
-
-BITBOARD Position::get_all_pieces() {
-    return get_our_pieces() | get_opp_pieces();
-}
-
-Piece Position::get_piece_standard(Square square) {
-    return board[square];
-}
+#include "constants.h"
 
 void Position::remove_piece(Piece piece, Square square) {
     pieces[piece] &= ~(1ULL << square);
@@ -100,7 +65,7 @@ void Position::set_fen(const std::string& fen_string) {
         }
     }
 
-    castle_ability_bits = 0;
+    i32 castle_ability_bits = 0;
     for (char c : castling) {
 
         if (c == 'K') castle_ability_bits |= 1;
@@ -137,15 +102,13 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
             continue;
         }
 
-        //assert((pieces[piece] & (1ULL << MAILBOX_TO_STANDARD[pos]) >> MAILBOX_TO_STANDARD[pos]) == 1);
-
         new_board += PIECE_MATCHER[piece];
         new_board += ' ';
 
     }
 
     os << new_board << std::endl << std::endl;
-    os << "side: " << p.side << " ep: " << p.ep_square << " castle: " << p.castle_ability_bits
+    os << "side: " << p.side << " ep: " << p.ep_square << " castle: " << 0
               << " hash: " << p.hash_key << std::endl << std::endl;
 
     for (int piece = WHITE_PAWN; piece < EMPTY; piece++) {
@@ -153,4 +116,12 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
         print_bitboard(p.pieces[piece]);
     }
 	return os;
+}
+
+void Position::play(Move &move) {
+
+}
+
+void Position::undo(Move &move) {
+
 }

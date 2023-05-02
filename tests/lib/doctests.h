@@ -432,10 +432,10 @@ namespace doctest {
 // A 24 byte string class (can be as small as 17 for x64 and 13 for x86) that can hold strings with length
 // of up to 23 chars on the stack before going on the heap - the last byte of the buffer is used for:
 // - "is small" bit - the highest bit - if "0" then it is small - otherwise its "1" (128)
-// - if small - capacity left before going on the heap - using the lowest 5 bits
+// - if small - Capacity left before going on the heap - using the lowest 5 bits
 // - if small - 2 bits are left unused - the second and third highest ones
 // - if small - acts as a null terminator if strlen() is 23 (24 including the null terminator)
-//              and the "is small" bit remains "0" ("as well as the capacity left") so its OK
+//              and the "is small" bit remains "0" ("as well as the Capacity left") so its OK
 // Idea taken from this lecture about the string implementation of facebook/folly - fbstring
 // https://www.youtube.com/watch?v=kPR8h4-qZdk
 // TODO:

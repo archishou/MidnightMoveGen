@@ -2,25 +2,32 @@
 #include <cstdint>
 #include "types.h"
 
-enum MoveType : uint8_t {
-	MOVE_TYPE_NORMAL	= 0b0000,
-	MOVE_TYPE_EP		= 0b0001,
-	MOVE_TYPE_CASTLE	= 0b0010,
-	MOVE_TYPE_PROMOTION	= 0b0011,
-};
+using MoveType = u8;
 
-enum PromotionType : uint8_t {
-	PROMOTION_KNIGHT	= 0b0000,
-	PROMOTION_BISHOP	= 0b0001,
-	PROMOTION_ROOK		= 0b0010,
-	PROMOTION_QUEEN		= 0b0011,
-};
+MoveType QUIET		= 0b0000;
+MoveType OO			= 0b0001;
+MoveType OOO		= 0b0010;
+
+// Captures have the 4th bit set.
+MoveType CAPTURE	= 0b1000;
+MoveType ENPASSANT	= 0b1001;
+
+// Promotions have the 3rd bit set.
+MoveType PR_KNIGHT	= 0b0100;
+MoveType PR_BISHOP	= 0b0101;
+MoveType PR_ROOK	= 0b0110;
+MoveType PR_QUEEN	= 0b0111;
 
 class Move {
 private:
 	// Bits are arranged as follows
-	// | 2 bits for type | 2 bits for promotion piece | 6 bits for from | 6 bits for to
+	// | 1 bits for type | 6 bits for from | 6 bits for to
 	uint16_t move;
+
+	static constexpr u8 TO_SHIFT = 0;
+	static constexpr u8 FROM_SHIFT = 6;
+	static constexpr u8 TYPE_SHIFT = 12;
+
 public:
 	inline Move() : move(0) {}
 
@@ -30,14 +37,17 @@ public:
 		move = (from << 6) | to;
 	}
 
-	inline Move(Square from, Square to, MoveType type, PromotionType promotion_type) : move(0) {
-		move = promotion_type << 14 | (type << 12) | (from << 6) | to;
+	inline Move(Square from, Square to, MoveType type) : move(0) {
+		move = (type << TYPE_SHIFT) | (from << FROM_SHIFT) | to << TO_SHIFT;
 	}
 
 	[[nodiscard]] inline Square to() const { return Square(move & 0x3f); }
-	[[nodiscard]] inline Square from() const { return Square((move >> 6) & 0x3f); }
-	[[nodiscard]] inline MoveType type() const { return MoveType((move >> 12) & 0xf); }
-	[[nodiscard]] inline PromotionType promotion_piece() const { return PromotionType((move >> 14) & 0xf); }
+	[[nodiscard]] inline Square from() const { return Square((move >> FROM_SHIFT) & 0x3f); }
+	[[nodiscard]] inline MoveType type() const { return (move >> TYPE_SHIFT) & 0xf; }
+
+	[[nodiscard]] inline bool is_capture() const { return (move >> TYPE_SHIFT) & 0b1000; }
+	[[nodiscard]] inline bool is_promotion() const { return (move >> TYPE_SHIFT) & 0b0100; }
+	[[nodiscard]] inline bool is_quiet() const { return !is_capture() && !is_promotion(); }
 
 	bool operator==(Move a) const { return move == a.move; }
 	bool operator!=(Move a) const { return move != a.move; }
