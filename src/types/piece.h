@@ -29,3 +29,8 @@ enum Piece : u32 {
 	BLACK_KING,
 	EMPTY,
 };
+
+template<Color color, PieceType piece_type>
+Piece make_piece() {
+	return static_cast<Piece>((color << 3) | piece_type);
+}
