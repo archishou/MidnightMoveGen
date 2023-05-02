@@ -15,11 +15,10 @@ public:
 	PositionState() = default;
 	~PositionState() = default;
 
-private:
 	Bitboard from_to{};
 	Piece captured{};
 	Square ep_square{};
-	u8 fifty_move_rule{};
+	u16 fifty_move_rule{};
 };
 
 class Position {
@@ -41,11 +40,12 @@ public:
 	std::array<Piece, NSQUARES> board{};
 
     Color side = WHITE;
-    Square ep_square = NO_SQUARE;
     ZobristHash hash_key = 0;
 	i32 game_ply{};
 
 	Stack<ZobristHash, POSITION_STATE_SIZE> hash_history{};
+	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
+	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }
 
     void set_fen(const std::string& fen);
 	std::string fen();

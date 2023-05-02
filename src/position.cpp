@@ -71,12 +71,14 @@ void Position::set_fen(const std::string& fen_string) {
 
     }
 
+	/*
     if (en_passant.size() > 1) {
         auto square = static_cast<Square>((8 - (en_passant[1] - '0')) * 8 + en_passant[0] - 'a');
         ep_square = square;
     } else {
         ep_square = NO_SQUARE;
     }
+    */
 }
 
 std::ostream& operator << (std::ostream& os, const Position& p) {
@@ -106,7 +108,6 @@ void Position::reset() {
 	board.fill(EMPTY);
 
 	side = WHITE;
-	ep_square = NO_SQUARE;
 	hash_key = 0;
 	game_ply = 0;
 }

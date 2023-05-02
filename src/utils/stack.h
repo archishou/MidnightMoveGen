@@ -27,7 +27,7 @@ public:
 		return data[length-- -1];
 	}
 
-	inline T peek() {
+	inline T peek() const {
 		return data[length - 1];
 	}
 
