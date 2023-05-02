@@ -28,6 +28,13 @@ private:
 	static constexpr u8 FROM_SHIFT = 6;
 	static constexpr u8 TYPE_SHIFT = 12;
 
+	static constexpr u8 TO_BITMASK = 0b111111;
+	static constexpr u8 FROM_BITMASK = 0b111111;
+	static constexpr u8 TYPE_BITMASK = 0b1111;
+
+	static constexpr u8 CAPTURE_BITMASK = 0b1000;
+	static constexpr u8 PROMOTION_BITMASK = 0b0100;
+
 public:
 	inline Move() : move(0) {}
 
@@ -41,12 +48,12 @@ public:
 		move = (type << TYPE_SHIFT) | (from << FROM_SHIFT) | to << TO_SHIFT;
 	}
 
-	[[nodiscard]] inline Square to() const { return Square(move & 0x3f); }
-	[[nodiscard]] inline Square from() const { return Square((move >> FROM_SHIFT) & 0x3f); }
-	[[nodiscard]] inline MoveType type() const { return (move >> TYPE_SHIFT) & 0xf; }
+	[[nodiscard]] inline Square to() const { return Square(move & TO_BITMASK); }
+	[[nodiscard]] inline Square from() const { return Square((move >> FROM_SHIFT) & FROM_BITMASK); }
+	[[nodiscard]] inline MoveType type() const { return (move >> TYPE_SHIFT) & TYPE_BITMASK; }
 
-	[[nodiscard]] inline bool is_capture() const { return (move >> TYPE_SHIFT) & 0b1000; }
-	[[nodiscard]] inline bool is_promotion() const { return (move >> TYPE_SHIFT) & 0b0100; }
+	[[nodiscard]] inline bool is_capture() const { return (move >> TYPE_SHIFT) & CAPTURE_BITMASK; }
+	[[nodiscard]] inline bool is_promotion() const { return (move >> TYPE_SHIFT) & PROMOTION_BITMASK; }
 	[[nodiscard]] inline bool is_quiet() const { return !is_capture() && !is_promotion(); }
 
 	bool operator==(Move a) const { return move == a.move; }
