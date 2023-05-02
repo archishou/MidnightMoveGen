@@ -118,10 +118,21 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
 	return os;
 }
 
+void Position::reset() {
+
+}
+
+template<Color color>
 void Position::play(Move &move) {
 
 }
 
+template<Color color>
 void Position::undo(Move &move) {
 
 }
+
+template void Position::play<WHITE>(Move &move);
+template void Position::play<BLACK>(Move &move);
+template void Position::undo<WHITE>(Move &move);
+template void Position::undo<BLACK>(Move &move);

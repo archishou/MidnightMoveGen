@@ -17,6 +17,7 @@ using f64 = double;
 
 using usize = std::size_t;
 
+constexpr i8 NCOLORS = 2;
 enum Color : u8 {
 	WHITE,
 	BLACK,
@@ -26,7 +27,7 @@ constexpr Color operator~(Color c) {
 	return Color(c ^ BLACK);
 }
 
-constexpr uint32_t NPIECES = 13;
+constexpr i8 NPIECES = 13;
 enum Piece : u32 {
 	WHITE_PAWN,
 	WHITE_KNIGHT,
@@ -67,7 +68,7 @@ enum PieceType : u32 {
 	NO_PIECE_TYPE
 };
 
-const uint32_t NDIRS = 8;
+const i8 NDIRS = 8;
 enum Direction : i32 {
 	NORTH = 8, NORTH_EAST = 9, EAST = 1, SOUTH_EAST = -7,
 	SOUTH = -8, SOUTH_WEST = -9, WEST = -1, NORTH_WEST = 7,

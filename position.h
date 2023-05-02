@@ -37,15 +37,21 @@ public:
     ZobristHash hash_key = 0;
 	i32 game_ply{};
 
-	Stack<PositionState, 1000> state_history{};
-
-    void remove_piece(Piece piece, Square square);
-    void place_piece(Piece piece, Square square);
+	Stack<ZobristHash, 1000> hash_history{};
 
     void set_fen(const std::string& fen);
 
+	template<Color color>
 	void play(Move& move);
+
+	template<Color color>
 	void undo(Move& move);
 
 	friend std::ostream& operator<<(std::ostream& os, const Position& p);
+
+private:
+	Stack<PositionState, 1000> state_history{};
+	void remove_piece(Piece piece, Square square);
+	void place_piece(Piece piece, Square square);
+	void reset();
 };
