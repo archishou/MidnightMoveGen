@@ -24,16 +24,16 @@ private:
 	// | 4 bits for type | 6 bits for from | 6 bits for to
 	uint16_t move;
 
-	static constexpr u8 TO_SHIFT = 0;
-	static constexpr u8 FROM_SHIFT = 6;
-	static constexpr u8 TYPE_SHIFT = 12;
+	static constexpr u8 TO_SHIFT	= 0;
+	static constexpr u8 FROM_SHIFT	= 6;
+	static constexpr u8 TYPE_SHIFT	= 12;
 
-	static constexpr u8 TO_BITMASK = 0b111111;
-	static constexpr u8 FROM_BITMASK = 0b111111;
-	static constexpr u8 TYPE_BITMASK = 0b1111;
+	static constexpr u8 TO_BITMASK		= 0b111111;
+	static constexpr u8 FROM_BITMASK	= 0b111111;
+	static constexpr u8 TYPE_BITMASK	= 0b1111;
 
-	static constexpr u8 CAPTURE_BITMASK = 0b1000;
-	static constexpr u8 PROMOTION_BITMASK = 0b0100;
+	static constexpr u8 CAPTURE_BITMASK		= 0b1000;
+	static constexpr u8 PROMOTION_BITMASK	= 0b0100;
 
 public:
 	inline Move() : move(0) {}

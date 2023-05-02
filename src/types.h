@@ -87,3 +87,4 @@ constexpr CastleRight WHITE_OO	= 0b0100;
 constexpr CastleRight WHITE_OOO = 0b1000;
 
 using ZobristHash = u64;
+using Bitboard = u64;

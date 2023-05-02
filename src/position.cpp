@@ -21,7 +21,7 @@ void Position::place_piece(Piece piece, Square square) {
 
 void Position::set_fen(const std::string& fen_string) {
 	reset();
-    std::vector<std::string> fen_tokens = split(fen_string, ' ');
+    std::vector<std::string> fen_tokens = split(fen_string, " ");
 
     if (fen_tokens.size() < 4) {
         throw std::invalid_argument( "Fen is incorrect" );

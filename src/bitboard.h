@@ -1,14 +1,8 @@
 #pragma once
 #include <cstdint>
 #include "types.h"
+#include "constants/board_masks.h"
 #include <cassert>
-
-using Bitboard = uint64_t;
-
-constexpr Bitboard MASK_FILE[8] = {
-		0x101010101010101, 0x202020202020202, 0x404040404040404, 0x808080808080808,
-		0x1010101010101010, 0x2020202020202020, 0x4040404040404040, 0x8080808080808080,
-};
 
 void print_bitboard(Bitboard bitboard);
 
@@ -39,5 +33,5 @@ template<Color C, Direction D>
 [[nodiscard]] Square lsb(Bitboard bitboard);
 [[nodiscard]] Square msb(Bitboard bitboard);
 
-[[nodiscard]] uint32_t popcount(Bitboard bitboard);
-[[nodiscard]] Square poplsb(Bitboard& bitboard);
+[[nodiscard]] uint32_t pop_count(Bitboard bitboard);
+[[nodiscard]] Square pop_lsb(Bitboard& bitboard);

@@ -84,7 +84,7 @@ Square msb(U64 b) {
 
 #endif
 
-[[nodiscard]] uint32_t popcount(Bitboard bitboard) {
+[[nodiscard]] uint32_t pop_count(Bitboard bitboard) {
 #if defined(_MSC_VER) || defined(__INTEL_COMPILER)
 
 	return (uint8_t)_mm_popcnt_u64(mask);
@@ -96,7 +96,7 @@ Square msb(U64 b) {
 #endif
 }
 
-[[nodiscard]] Square poplsb(Bitboard& bitboard) {
+[[nodiscard]] Square pop_lsb(Bitboard& bitboard) {
 	Square s = lsb(bitboard);
 	bitboard &= bitboard - 1; // compiler optimizes this to _blsr_u64
 	return static_cast<Square>(s);
