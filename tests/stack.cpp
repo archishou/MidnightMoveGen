@@ -2,7 +2,6 @@
 // Created by Archishmaan Peyyety on 5/2/23.
 //
 
-#pragma once
 #include "lib/doctests.h"
 #include "../stack.h"
 
