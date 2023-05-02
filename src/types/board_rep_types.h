@@ -64,10 +64,10 @@ enum Square : u32 {
 	NO_SQUARE
 };
 
-const u32 NCASTLING_RIGHTS = 4;
+constexpr u32 NCASTLING_RIGHTS = 4;
 using CastleRight = u32;
 
-constexpr CastleRight BLACK_OO	= 0b0001;
-constexpr CastleRight BLACK_OOO = 0b0010;
-constexpr CastleRight WHITE_OO	= 0b0100;
-constexpr CastleRight WHITE_OOO = 0b1000;
+constexpr CastleRight BLACK_OOO = 0b0001;
+constexpr CastleRight BLACK_OO	= 0b0010;
+constexpr CastleRight WHITE_OOO = 0b0100;
+constexpr CastleRight WHITE_OO	= 0b1000;
