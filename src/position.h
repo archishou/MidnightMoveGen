@@ -5,10 +5,11 @@
 #include <string>
 #include "constants/misc_constants.h"
 #include "types.h"
-#include "bitboard.h"
+#include "types/bitboard.h"
 #include "constants/misc_constants.h"
-#include "move.h"
+#include "types/move.h"
 #include "utils/stack.h"
+#include "types/board_rep_types.h"
 
 class PositionState {
 public:

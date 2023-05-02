@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
-#include "types.h"
+#include "../types.h"
+#include "board_rep_types.h"
 
 using MoveType = u8;
 

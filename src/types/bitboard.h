@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
-#include "types.h"
-#include "constants/board_masks.h"
+#include "../types.h"
+#include "../constants/board_masks.h"
 #include <cassert>
 
 void print_bitboard(Bitboard bitboard);

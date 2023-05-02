@@ -6,7 +6,7 @@
 #include <iostream>
 #include "position.h"
 #include "utils/helpers.h"
-#include "bitboard.h"
+#include "types/bitboard.h"
 #include "constants/misc_constants.h"
 
 void Position::remove_piece(Piece piece, Square square) {
