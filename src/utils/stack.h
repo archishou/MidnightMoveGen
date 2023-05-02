@@ -23,13 +23,9 @@ public:
 		data[length++] = std::move(constructed_element);
 	}
 
-	[[nodiscard]] inline T pop() {
-		return data[length-- -1];
-	}
+	[[nodiscard]] inline T pop() { return data[length-- -1]; }
 
-	[[nodiscard]] inline T peek() const {
-		return data[length - 1];
-	}
+	[[nodiscard]] inline T peek() const { return data[length - 1]; }
 
 	inline void clear() {
 		for (auto i = 0; i < Capacity; i++) data[i].~T();
