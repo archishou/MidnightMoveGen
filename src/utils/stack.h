@@ -23,11 +23,11 @@ public:
 		data[length++] = std::move(constructed_element);
 	}
 
-	inline T pop() {
+	[[nodiscard]] inline T pop() {
 		return data[length-- -1];
 	}
 
-	inline T peek() const {
+	[[nodiscard]] inline T peek() const {
 		return data[length - 1];
 	}
 
