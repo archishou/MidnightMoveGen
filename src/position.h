@@ -12,6 +12,15 @@
 #include "types/board_rep_types.h"
 
 class PositionState {
+private:
+	static constexpr Bitboard WHITE_OO_MASK		= 0x90;
+	static constexpr Bitboard WHITE_OOO_MASK	= 0x11;
+
+	static constexpr Bitboard BLACK_OO_MASK		= 0x9000000000000000;
+	static constexpr Bitboard BLACK_OOO_MASK	= 0x1100000000000000;
+
+	static constexpr Bitboard ALL_CASTLING_MASK = 0x9100000000000091;
+
 public:
 	PositionState() = default;
 	~PositionState() = default;
