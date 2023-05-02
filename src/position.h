@@ -3,12 +3,12 @@
 //
 #pragma once
 #include <string>
-#include "constants.h"
+#include "constants/misc_constants.h"
 #include "types.h"
 #include "bitboard.h"
-#include "constants.h"
+#include "constants/misc_constants.h"
 #include "move.h"
-#include "stack.h"
+#include "utils/stack.h"
 
 class PositionState {
 public:

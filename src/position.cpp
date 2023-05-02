@@ -5,9 +5,9 @@
 #include <stdexcept>
 #include <iostream>
 #include "position.h"
-#include "useful.h"
+#include "utils/helpers.h"
 #include "bitboard.h"
-#include "constants.h"
+#include "constants/misc_constants.h"
 
 void Position::remove_piece(Piece piece, Square square) {
     pieces[piece] &= ~(1ULL << square);
@@ -53,8 +53,8 @@ void Position::set_fen(const std::string& fen_string) {
         }
         else if (std::isalpha(c)) {
 
-            Piece piece = piece_to_num(c);
-            place_piece(piece, pos);
+            //Piece piece = piece_to_num(c);
+            //place_piece(piece, pos);
 
             pos = static_cast<Square>(pos + 1);
 

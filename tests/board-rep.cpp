@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "lib/doctests.h"
-#include "../position.h"
+#include "../src/position.h"
 
 TEST_SUITE_BEGIN("board-rep");
 

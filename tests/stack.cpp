@@ -3,7 +3,7 @@
 //
 
 #include "lib/doctests.h"
-#include "../stack.h"
+#include "../src/utils/stack.h"
 
 TEST_SUITE_BEGIN("stack");
 

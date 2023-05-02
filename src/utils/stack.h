@@ -5,7 +5,7 @@
 
 #include <array>
 #include <algorithm>
-#include "types.h"
+#include "../types.h"
 
 // Credit to Polaris by Ciekce for massively inspiring this.
 
