@@ -9,7 +9,7 @@ TEST_SUITE_BEGIN("stack");
 
 TEST_CASE("push-pop-peek") {
 	constexpr u32 STACK_CAP = 100;
-	Stack<int, STACK_CAP> stack{};
+	Stack<i32, STACK_CAP> stack{};
 
 	for (auto i = 0; i < STACK_CAP; i++) {
 		stack.push(i);
