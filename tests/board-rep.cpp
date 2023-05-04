@@ -6,7 +6,9 @@ TEST_SUITE_BEGIN("board-rep");
 
 TEST_CASE("pawn-attacks") {
 	Position p;
-	print_bitboard(from_square(a1));
+	p.set_fen(START_FEN);
+	std::cout << " hi" << std::endl;
+	std::cout << p << std::endl;
 }
 
 TEST_SUITE_END();

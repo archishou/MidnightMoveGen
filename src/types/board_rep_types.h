@@ -4,8 +4,8 @@
 using ZobristHash = u64;
 using Bitboard = u64;
 
-constexpr i8 NCOLORS = 2;
-enum Color : u8 {
+constexpr i32 NCOLORS = 2;
+enum Color : i32 {
 	WHITE,
 	BLACK,
 };
@@ -14,7 +14,7 @@ constexpr Color operator~(Color c) {
 	return Color(c ^ BLACK);
 }
 
-constexpr i8 NDIRS = 8;
+constexpr i32 NDIRS = 8;
 enum Direction : i32 {
 	NORTH = 8, NORTH_EAST = 9, EAST = 1, SOUTH_EAST = -7,
 	SOUTH = -8, SOUTH_WEST = -9, WEST = -1, NORTH_WEST = 7,
@@ -27,8 +27,8 @@ constexpr Direction relative_dir() {
 	return Direction(-D);
 }
 
-constexpr u32 NFILES = 8;
-using File = u32;
+constexpr i32 NFILES = 8;
+using File = i32;
 
 constexpr File AFILE = 0;
 constexpr File BFILE = 1;
@@ -39,8 +39,8 @@ constexpr File FFILE = 5;
 constexpr File GFILE = 6;
 constexpr File HFILE = 7;
 
-constexpr u32 NRANKS = 8;
-using Rank = u32;
+constexpr i32 NRANKS = 8;
+using Rank = i32;
 
 constexpr Rank RANK1 = 0;
 constexpr Rank RANK2 = 1;
@@ -51,8 +51,8 @@ constexpr Rank RANK6 = 5;
 constexpr Rank RANK7 = 6;
 constexpr Rank RANK8 = 7;
 
-constexpr u32 NSQUARES = 64;
-enum Square : u32 {
+constexpr i32 NSQUARES = 64;
+enum Square : i32 {
 	a1, b1, c1, d1, e1, f1, g1, h1,
 	a2, b2, c2, d2, e2, f2, g2, h2,
 	a3, b3, c3, d3, e3, f3, g3, h3,
@@ -64,8 +64,18 @@ enum Square : u32 {
 	NO_SQUARE
 };
 
-constexpr u32 NCASTLING_RIGHTS = 4;
-using CastleRight = u32;
+inline Square operator ++(Square& s, int) {
+	return static_cast<Square>(s + 1);
+}
+constexpr Square operator +(Square s, Direction d) { return Square(static_cast<i32>(s) + static_cast<i32>(d)); }
+constexpr Square operator -(Square s, Direction d) { return Square(static_cast<i32>(s) - static_cast<i32>(d)); }
+inline Square& operator +=(Square& s, Direction d) { return s = s + d; }
+inline Square& operator +=(Square& s, i32 i) { return s = static_cast<Square>(s + i); }
+inline Square& operator -=(Square& s, Direction d) { return s = s - d; }
+inline Square flip(Square s) { return static_cast<Square>(s ^ 0b111000); }
+
+constexpr i32 NCASTLING_RIGHTS = 4;
+using CastleRight = i32;
 
 constexpr CastleRight BLACK_OOO = 0b0001;
 constexpr CastleRight BLACK_OO	= 0b0010;

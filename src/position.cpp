@@ -24,7 +24,7 @@ void Position::set_fen(const std::string& fen_string) {
     std::vector<std::string> fen_tokens = split(fen_string, " ");
 
     if (fen_tokens.size() < 4) {
-        throw std::invalid_argument( "Fen is incorrect" );
+        throw std::invalid_argument("Fen is missing fields. ");
     }
 
     const std::string position = fen_tokens[0];
@@ -37,33 +37,19 @@ void Position::set_fen(const std::string& fen_string) {
 
     side = (player == "w") ? WHITE : BLACK;
 
-    auto pos = static_cast<Square>(56);
+    Square square = a8;
+	square++;
 
     // Parsing the main 8x8 board part while adding appropriate padding
-    for (char c : position) {
-        if (c == '/' ) {
-            pos = static_cast<Square>(pos - 16);
-        } else if (std::isdigit(c)) {
+	for (char ch : position) {
+		if (isdigit(ch)) square += std::stoi(std::string(1, ch)) * EAST;
+		else if (ch == '/') square += SOUTH_SOUTH;
+		else place_piece(from_char(ch), Square(square++));
+	}
 
-            for (int empty_amt = 0; empty_amt < c - '0'; empty_amt++) {
-                board[pos] = EMPTY;
-                pos = static_cast<Square>(pos + 1);
-            }
-
-        }
-        else if (std::isalpha(c)) {
-
-            //Piece piece = piece_to_num(c);
-            //place_piece(piece, pos);
-
-            pos = static_cast<Square>(pos + 1);
-
-        }
-    }
-
+	/*
     i32 castle_ability_bits = 0;
     for (char c : castling) {
-
         if (c == 'K') castle_ability_bits |= 1;
         else if (c == 'Q') castle_ability_bits |= 2;
         else if (c == 'k') castle_ability_bits |= 4;
@@ -71,7 +57,6 @@ void Position::set_fen(const std::string& fen_string) {
 
     }
 
-	/*
     if (en_passant.size() > 1) {
         auto square = static_cast<Square>((8 - (en_passant[1] - '0')) * 8 + en_passant[0] - 'a');
         ep_square = square;
@@ -82,8 +67,8 @@ void Position::set_fen(const std::string& fen_string) {
 }
 
 std::ostream& operator << (std::ostream& os, const Position& p) {
-	const char* s = "   +---+---+---+---+---+---+---+---+\n";
-	const char* t = "     A   B   C   D   E   F   G   H\n";
+	const std::string s = "   +---+---+---+---+---+---+---+---+\n";
+	const std::string t = "     A   B   C   D   E   F   G   H\n";
 	os << t;
 	for (int i = 56; i >= 0; i -= 8) {
 		os << s << " " << i / 8 + 1 << " ";

@@ -28,7 +28,7 @@ public:
 	[[nodiscard]] inline T peek() const { return data[length - 1]; }
 
 	inline void clear() {
-		for (auto i = 0; i < Capacity; i++) data[i].~T();
+		for (usize i = 0; i < length; i++) data[i].~T();
 		length = 0;
 	}
 
