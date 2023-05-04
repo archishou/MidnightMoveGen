@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
 #include "position.h"
 #include "utils/helpers.h"
 #include "types/bitboard.h"
@@ -41,7 +42,41 @@ void Position::move_piece(Piece piece, Square to, Square from) {
 }
 
 std::string Position::fen() const {
-	return "incomplete";
+	std::ostringstream fen;
+	int empty;
+
+	for (int i = 56; i >= 0; i -= 8) {
+		empty = 0;
+		for (int j = 0; j < 8; j++) {
+			Piece p = board[i + j];
+			if (p == NO_PIECE) empty++;
+			else {
+				fen << (empty == 0 ? "" : std::to_string(empty)) << PIECE_MATCHER[p];
+				empty = 0;
+			}
+		}
+
+		if (empty != 0) fen << empty;
+		if (i > 0) fen << '/';
+	}
+
+	std::string castling_rights;
+	const Bitboard set_castling_state = castling_state();
+	if ((set_castling_state >> 3) & 0b1) castling_rights += "K";
+	if ((set_castling_state >> 2) & 0b1) castling_rights += "Q";
+	if ((set_castling_state >> 1) & 0b1) castling_rights += "k";
+	if (set_castling_state & 0b1) castling_rights += "q";
+	if (set_castling_state == 0) castling_rights = "-";
+	int full_move_clock = half_move_clock / 2;
+	if (side == WHITE) full_move_clock += 1;
+
+	fen << (side == WHITE ? " w " : " b ")
+		<< castling_rights
+		<< (ep_square() == NO_SQUARE ? " -" : " " + std::string(SQ_TO_STRING[ep_square()]))
+		<< " "
+		<< fifty_move_rule() << " "
+		<< full_move_clock;
+
 }
 
 void Position::set_fen(const std::string& fen_string) {

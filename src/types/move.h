@@ -38,15 +38,15 @@ private:
 	static constexpr u8 PROMOTION_BITMASK	= 0b0100;
 
 public:
-	inline Move() : move(0) {}
+	consteval Move() : move(0) {}
 
-	inline explicit Move(uint16_t m) { move = m; }
+	constexpr explicit Move(uint16_t m) { move = m; }
 
-	inline Move(Square from, Square to) : move(0) {
+	constexpr Move(Square from, Square to) : move(0) {
 		move = (from << 6) | to;
 	}
 
-	inline Move(Square from, Square to, MoveType type) : move(0) {
+	constexpr Move(Square from, Square to, MoveType type) : move(0) {
 		move = (type << TYPE_SHIFT) | (from << FROM_SHIFT) | to << TO_SHIFT;
 	}
 
@@ -62,4 +62,14 @@ public:
 	bool operator!=(Move a) const { return move != a.move; }
 };
 
-const Move EMPTY_MOVE = Move();
+constexpr Move EMPTY_MOVE = Move();
+
+constexpr std::array MOVE_TYPE_UCI = {
+		"", "", "", "", "N", "B", "R", "Q", "", "", "", "",
+		"N", "B", "R", "Q"
+};
+
+constexpr std::ostream& operator<<(std::ostream& os, const Move& m) {
+	os << SQ_TO_STRING[m.from()] << SQ_TO_STRING[m.to()] << MOVE_TYPE_UCI[m.type()];
+	return os;
+}
