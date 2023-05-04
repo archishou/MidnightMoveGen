@@ -12,7 +12,7 @@ TEST_CASE("push-pop-peek") {
 	Stack<i32, STACK_CAP> stack{};
 
 	for (usize i = 0; i < STACK_CAP; i++) {
-		stack.push(i);
+		stack.push(static_cast<i32>(i));
 		CHECK_EQ(stack.peek(), i);
 		CHECK_EQ(stack.size(), i + 1);
 		CHECK_EQ(stack[i], i);
