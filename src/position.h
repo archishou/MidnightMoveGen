@@ -29,16 +29,15 @@ public:
 	Piece captured{};
 	Square ep_square{};
 	u16 fifty_move_rule{};
+	ZobristHash hash{};
 };
 
 class Position {
 private:
 	Color side = WHITE;
-	ZobristHash hash_key = 0;
 	i32 game_ply{};
 
 	std::array<Bitboard, NPIECES> pieces{};
-	std::array<Piece, NSQUARES> board{};
 
 	static constexpr i16 POSITION_STATE_SIZE = 1000;
 
@@ -51,11 +50,12 @@ private:
 
 public:
 
+	std::array<Piece, NSQUARES> board{};
     Position() = default;
 
-	Stack<ZobristHash, POSITION_STATE_SIZE> hash_history{};
 	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
 	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }
+	[[nodiscard]] inline ZobristHash hash() const { return state_history.peek().hash; }
 
     void set_fen(const std::string& fen);
 	std::string fen();

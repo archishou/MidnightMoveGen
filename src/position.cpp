@@ -38,7 +38,6 @@ void Position::set_fen(const std::string& fen_string) {
     side = (player == "w") ? WHITE : BLACK;
 
     Square square = a8;
-	square++;
 
     // Parsing the main 8x8 board part while adding appropriate padding
 	for (char ch : position) {
