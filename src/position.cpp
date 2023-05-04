@@ -40,7 +40,7 @@ void Position::move_piece(Piece piece, Square to, Square from) {
 	place_piece(piece, to);
 }
 
-std::string Position::fen() {
+std::string Position::fen() const {
 	return "incomplete";
 }
 
@@ -105,7 +105,7 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
 	os << s;
 	os << t << "\n";
 
-	//os << "FEN: " << p.fen() << "\n";
+	os << "FEN: " << p.fen() << "\n";
 	os << "Hash: 0x" << std::hex << p.hash() << std::dec << "\n";
 
 	return os;

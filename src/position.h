@@ -36,26 +36,27 @@ public:
 };
 
 class Position {
-private:
+public:
+//private:
 	Color side = WHITE;
 
 	std::array<Bitboard, NPIECES> pieces{};
+	std::array<Piece, NSQUARES> board{};
 
 	static constexpr i16 POSITION_STATE_SIZE = 1000;
 
 	Stack<PositionState, POSITION_STATE_SIZE> state_history{};
 
-	void remove_piece(Square square);
 	void place_piece(Piece piece, Square square);
+	void remove_piece(Square square);
 	void move_piece(Piece piece, Square to, Square from);
 
 	void reset();
 
-public:
+//public:
 	Position() = default;
 	explicit Position(const std::string& fen);
 
-	std::array<Piece, NSQUARES> board{};
 	[[nodiscard]] inline Piece piece_at(Square square) const {return board[square]; }
 
 	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
@@ -63,13 +64,12 @@ public:
 	[[nodiscard]] inline ZobristHash hash() const { return state_history.peek().hash; }
 
 	void set_fen(const std::string& fen);
-	std::string fen();
+	[[nodiscard]] std::string fen() const;
+	friend std::ostream& operator<<(std::ostream& os, const Position& p);
 
 	template<Color color>
 	void play(Move move);
 
 	template<Color color>
 	void undo(Move move);
-
-	friend std::ostream& operator<<(std::ostream& os, const Position& p);
 };
