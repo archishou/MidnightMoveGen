@@ -24,14 +24,14 @@ void Position::reset() {
 }
 
 void Position::place_piece(Piece piece, Square square) {
-	pieces[piece] |= (1ULL << square);
+	pieces[piece] |= square_to_bitboard(square);
 	board[square] = piece;
 	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece][square];
 }
 
 void Position::remove_piece(Square square) {
 	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece_at(square)][square];
-	pieces[piece_at(square)] &= ~from_square(square);
+	pieces[piece_at(square)] &= ~square_to_bitboard(square);
 	board[square] = NO_PIECE;
 }
 

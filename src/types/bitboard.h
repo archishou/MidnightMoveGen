@@ -7,7 +7,7 @@
 
 void print_bitboard(Bitboard bitboard);
 
-[[nodiscard]] inline Bitboard from_square(Square square) {
+[[nodiscard]] inline Bitboard square_to_bitboard(Square square) {
 	return 1ULL << square;
 }
 
