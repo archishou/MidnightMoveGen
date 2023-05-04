@@ -37,43 +37,43 @@ void print_bitboard(Bitboard bitboard) {
 #ifdef _WIN64 // MSVC, WIN64
 #include <intrin.h>
 Square lsb(U64 b) {
-    unsigned long idx;
-    _BitScanForward64(&idx, b);
-    return (Square)idx;
+	unsigned long idx;
+	_BitScanForward64(&idx, b);
+	return (Square)idx;
 }
 
 Square msb(U64 b) {
-    unsigned long idx;
-    _BitScanReverse64(&idx, b);
-    return (Square)idx;
+	unsigned long idx;
+	_BitScanReverse64(&idx, b);
+	return (Square)idx;
 }
 
 #else // MSVC, WIN32
 #include <intrin.h>
 Square lsb(U64 b) {
-    unsigned long idx;
+	unsigned long idx;
 
-    if (b & 0xffffffff) {
-        _BitScanForward(&idx, int32_t(b));
-        return Square(idx);
-    }
-    else {
-        _BitScanForward(&idx, int32_t(b >> 32));
-        return Square(idx + 32);
-    }
+	if (b & 0xffffffff) {
+		_BitScanForward(&idx, int32_t(b));
+		return Square(idx);
+	}
+	else {
+		_BitScanForward(&idx, int32_t(b >> 32));
+		return Square(idx + 32);
+	}
 }
 
 Square msb(U64 b) {
-    unsigned long idx;
+	unsigned long idx;
 
-    if (b >> 32) {
-        _BitScanReverse(&idx, int32_t(b >> 32));
-        return Square(idx + 32);
-    }
-    else {
-        _BitScanReverse(&idx, int32_t(b));
-        return Square(idx);
-    }
+	if (b >> 32) {
+		_BitScanReverse(&idx, int32_t(b >> 32));
+		return Square(idx + 32);
+	}
+	else {
+		_BitScanReverse(&idx, int32_t(b));
+		return Square(idx);
+	}
 }
 
 #endif

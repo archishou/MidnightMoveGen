@@ -62,7 +62,7 @@ public:
 	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }
 	[[nodiscard]] inline ZobristHash hash() const { return state_history.peek().hash; }
 
-    void set_fen(const std::string& fen);
+	void set_fen(const std::string& fen);
 	std::string fen();
 
 	template<Color color>

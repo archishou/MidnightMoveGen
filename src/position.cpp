@@ -12,13 +12,13 @@
 
 void Position::remove_piece(Square square) {
 	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece_at(square)][square];
-    pieces[piece_at(square)] &= ~from_square(square);
-    board[square] = NO_PIECE;
+	pieces[piece_at(square)] &= ~from_square(square);
+	board[square] = NO_PIECE;
 }
 
 void Position::place_piece(Piece piece, Square square) {
-    pieces[piece] |= (1ULL << square);
-    board[square] = piece;
+	pieces[piece] |= (1ULL << square);
+	board[square] = piece;
 	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece][square];
 }
 
@@ -33,23 +33,23 @@ void Position::set_fen(const std::string& fen_string) {
 	// Push empty state to state history.
 	state_history.push({});
 
-    std::vector<std::string> fen_tokens = split(fen_string, " ");
+	std::vector<std::string> fen_tokens = split(fen_string, " ");
 
-    if (fen_tokens.size() < 4) {
-        throw std::invalid_argument("Fen is missing fields. ");
-    }
+	if (fen_tokens.size() < 4) {
+		throw std::invalid_argument("Fen is missing fields. ");
+	}
 
-    const std::string position = fen_tokens[0];
-    const std::string player = fen_tokens[1];
-    const std::string castling = fen_tokens[2];
-    const std::string en_passant = fen_tokens[3];
+	const std::string position = fen_tokens[0];
+	const std::string player = fen_tokens[1];
+	const std::string castling = fen_tokens[2];
+	const std::string en_passant = fen_tokens[3];
 
-    const std::string half_move_clock = fen_tokens.size() > 4 ? fen_tokens[4] : "0";
-    const std::string full_move_counter = fen_tokens.size() > 4 ? fen_tokens[5] : "1";
+	const std::string half_move_clock = fen_tokens.size() > 4 ? fen_tokens[4] : "0";
+	const std::string full_move_counter = fen_tokens.size() > 4 ? fen_tokens[5] : "1";
 
-    side = player == "w" ? WHITE : BLACK;
+	side = player == "w" ? WHITE : BLACK;
 
-    Square square = a8;
+	Square square = a8;
 
 	for (char ch : position) {
 		if (isdigit(ch)) square += std::stoi(std::string(1, ch)) * EAST;
@@ -58,21 +58,21 @@ void Position::set_fen(const std::string& fen_string) {
 	}
 
 	state_history.top().from_to = PositionState::ALL_CASTLING_MASK;
-    for (char c : castling) {
-        if (c == 'K') 		state_history.top().from_to &= ~PositionState::WHITE_OO_MASK;
-        else if (c == 'Q') 	state_history.top().from_to &= ~PositionState::WHITE_OOO_MASK;
-        else if (c == 'k') 	state_history.top().from_to &= ~PositionState::BLACK_OO_MASK;
-        else if (c == 'q') 	state_history.top().from_to &= ~PositionState::BLACK_OOO_MASK;
-    }
+	for (char c : castling) {
+		if (c == 'K') 		state_history.top().from_to &= ~PositionState::WHITE_OO_MASK;
+		else if (c == 'Q') 	state_history.top().from_to &= ~PositionState::WHITE_OOO_MASK;
+		else if (c == 'k') 	state_history.top().from_to &= ~PositionState::BLACK_OO_MASK;
+		else if (c == 'q') 	state_history.top().from_to &= ~PositionState::BLACK_OOO_MASK;
+	}
 
 	/*
-    if (en_passant.size() > 1) {
-        auto square = static_cast<Square>((8 - (en_passant[1] - '0')) * 8 + en_passant[0] - 'a');
-        ep_square = square;
-    } else {
-        ep_square = NO_SQUARE;
-    }
-    */
+	if (en_passant.size() > 1) {
+		auto square = static_cast<Square>((8 - (en_passant[1] - '0')) * 8 + en_passant[0] - 'a');
+		ep_square = square;
+	} else {
+		ep_square = NO_SQUARE;
+	}
+	*/
 }
 
 std::ostream& operator << (std::ostream& os, const Position& p) {
