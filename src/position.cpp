@@ -57,7 +57,7 @@ void Position::set_fen(const std::string& fen_string) {
 		else place_piece(piece_from_char(ch), square++);
 	}
 
-	state_history.top().from_to = PositionState::ALL_CASTLING_MASK;
+	state_history.top().from_to = PositionState::NO_CASTLING_MASK;
 	for (char c : castling) {
 		if (c == 'K') 		state_history.top().from_to &= ~PositionState::WHITE_OO_MASK;
 		else if (c == 'Q') 	state_history.top().from_to &= ~PositionState::WHITE_OOO_MASK;

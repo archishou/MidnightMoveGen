@@ -22,7 +22,7 @@ private:
 	static constexpr Bitboard BLACK_OO_MASK		= 0x9000000000000000;
 	static constexpr Bitboard BLACK_OOO_MASK	= 0x1100000000000000;
 
-	static constexpr Bitboard ALL_CASTLING_MASK = 0x9100000000000091;
+	static constexpr Bitboard NO_CASTLING_MASK = 0x9100000000000091;
 
 	Bitboard from_to{};
 	Piece captured{};
