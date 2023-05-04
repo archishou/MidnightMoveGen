@@ -26,6 +26,7 @@ public:
 	[[nodiscard]] inline T pop() { return data[length-- -1]; }
 
 	[[nodiscard]] inline T peek() const { return data[length - 1]; }
+	[[nodiscard]] inline T& top() { return data[length - 1]; }
 
 	inline void clear() {
 		for (usize i = 0; i < length; i++) data[i].~T();

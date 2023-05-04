@@ -11,7 +11,10 @@
 #include "utils/stack.h"
 #include "types/board_rep_types.h"
 
+class Position;
+
 class PositionState {
+	friend Position;
 private:
 	static constexpr Bitboard WHITE_OO_MASK		= 0x90;
 	static constexpr Bitboard WHITE_OOO_MASK	= 0x11;
@@ -21,21 +24,20 @@ private:
 
 	static constexpr Bitboard ALL_CASTLING_MASK = 0x9100000000000091;
 
-public:
-	PositionState() = default;
-	~PositionState() = default;
-
 	Bitboard from_to{};
 	Piece captured{};
 	Square ep_square{};
 	u16 fifty_move_rule{};
 	ZobristHash hash{};
+
+public:
+	PositionState() = default;
+	~PositionState() = default;
 };
 
 class Position {
 private:
 	Color side = WHITE;
-	i32 game_ply{};
 
 	std::array<Bitboard, NPIECES> pieces{};
 
@@ -43,15 +45,18 @@ private:
 
 	Stack<PositionState, POSITION_STATE_SIZE> state_history{};
 
-	void remove_piece(Piece piece, Square square);
+	void remove_piece(Square square);
 	void place_piece(Piece piece, Square square);
+	void move_piece(Piece piece, Square to, Square from);
 
 	void reset();
 
 public:
+	Position() = default;
+	explicit Position(const std::string& fen);
 
 	std::array<Piece, NSQUARES> board{};
-    Position() = default;
+	[[nodiscard]] inline Piece piece_at(Square square) const {return board[square]; }
 
 	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
 	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }

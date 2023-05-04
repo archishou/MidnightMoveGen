@@ -5,8 +5,7 @@
 TEST_SUITE_BEGIN("board-rep");
 
 TEST_CASE("pawn-attacks") {
-	Position p;
-	p.set_fen(START_FEN);
+	Position p(START_FEN);
 	std::cout << p << std::endl;
 }
 

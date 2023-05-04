@@ -27,7 +27,7 @@ enum Piece : u32 {
 	BLACK_ROOK,
 	BLACK_QUEEN,
 	BLACK_KING,
-	EMPTY,
+	NO_PIECE,
 };
 
 template<Color color, PieceType piece_type>
@@ -40,7 +40,11 @@ PieceType type_of() {
 	return static_cast<PieceType>(piece & 0b000111);
 }
 
-inline Piece from_char(char c) {
+inline PieceType type_of(Piece piece) {
+	return static_cast<PieceType>(piece & 0b000111);
+}
+
+inline Piece piece_from_char(char c) {
 	switch (c) {
 		case 'P': return WHITE_PAWN;
 		case 'N': return WHITE_KNIGHT;
@@ -54,6 +58,6 @@ inline Piece from_char(char c) {
 		case 'r': return BLACK_ROOK;
 		case 'q': return BLACK_QUEEN;
 		case 'k': return BLACK_KING;
-		default: return EMPTY;
+		default: return NO_PIECE;
 	}
 }
