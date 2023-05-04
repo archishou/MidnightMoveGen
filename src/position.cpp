@@ -10,10 +10,17 @@
 #include "constants/misc_constants.h"
 #include "constants/zobrist_constants.h"
 
-void Position::remove_piece(Square square) {
-	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece_at(square)][square];
-	pieces[piece_at(square)] &= ~from_square(square);
-	board[square] = NO_PIECE;
+Position::Position(const std::string& fen) {
+	set_fen(fen);
+}
+
+void Position::reset() {
+	state_history.clear();
+
+	pieces.fill(0);
+	board.fill(NO_PIECE);
+
+	side = WHITE;
 }
 
 void Position::place_piece(Piece piece, Square square) {
@@ -22,9 +29,19 @@ void Position::place_piece(Piece piece, Square square) {
 	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece][square];
 }
 
+void Position::remove_piece(Square square) {
+	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece_at(square)][square];
+	pieces[piece_at(square)] &= ~from_square(square);
+	board[square] = NO_PIECE;
+}
+
 void Position::move_piece(Piece piece, Square to, Square from) {
 	remove_piece(from);
 	place_piece(piece, to);
+}
+
+std::string Position::fen() {
+	return "incomplete";
 }
 
 void Position::set_fen(const std::string& fen_string) {
@@ -89,28 +106,10 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
 	os << t << "\n";
 
 	//os << "FEN: " << p.fen() << "\n";
-	//os << "Hash: 0x" << std::hex << p.hash << std::dec << "\n";
+	os << "Hash: 0x" << std::hex << p.hash() << std::dec << "\n";
 
 	return os;
 }
-
-void Position::reset() {
-	state_history.clear();
-
-	pieces.fill(0);
-	board.fill(NO_PIECE);
-
-	side = WHITE;
-}
-
-std::string Position::fen() {
-	return "incomplete";
-}
-
-Position::Position(const std::string& fen) {
-	set_fen(fen);
-}
-
 
 template<Color color>
 void Position::play(Move move) {
