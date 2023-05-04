@@ -65,9 +65,9 @@ enum Square : i32 {
 };
 
 inline Square operator++(Square& orig, int) {
-	Square rVal = orig;
+	Square r_val = orig;
 	orig = static_cast<Square>(orig + 1);
-	return rVal;
+	return r_val;
 }
 constexpr Square operator +(Square s, Direction d) { return Square(static_cast<i32>(s) + static_cast<i32>(d)); }
 constexpr Square operator -(Square s, Direction d) { return Square(static_cast<i32>(s) - static_cast<i32>(d)); }
