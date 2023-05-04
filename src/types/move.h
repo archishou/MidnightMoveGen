@@ -8,7 +8,7 @@ using MoveType = u8;
 constexpr MoveType QUIET		= 0b0000;
 constexpr MoveType OO			= 0b0001;
 constexpr MoveType OOO			= 0b0010;
-constexpr MoveType DOUBLED_PUSH	= 0b0011;
+constexpr MoveType DOUBLE_PUSH	= 0b0011;
 
 // Captures have the 4th bit set.
 constexpr MoveType CAPTURE		= 0b1000;

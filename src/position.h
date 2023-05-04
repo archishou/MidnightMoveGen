@@ -47,11 +47,21 @@ public:
 
 	Stack<PositionState, POSITION_STATE_SIZE> state_history{};
 
+	static constexpr bool ENABLE_HASH_UPDATE = true;
+	static constexpr bool DISABLE_HASH_UPDATE = false;
+
+	template<bool update_hash>
 	void place_piece(Piece piece, Square square);
+
+	template<bool update_hash>
 	void remove_piece(Square square);
-	void move_piece(Piece piece, Square to, Square from);
+
+	template<bool update_hash>
+	void move_piece(Square to, Square from);
 
 	void reset();
+
+	[[nodiscard]] u8 castling_state(Bitboard from_to) const;
 
 //public:
 	Position() = default;

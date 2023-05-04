@@ -24,21 +24,33 @@ void Position::reset() {
 	side = WHITE;
 }
 
+template<bool update_hash>
 void Position::place_piece(Piece piece, Square square) {
 	pieces[piece] |= square_to_bitboard(square);
 	board[square] = piece;
-	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece][square];
+	if constexpr (update_hash) state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece][square];
 }
 
+template<bool update_hash>
 void Position::remove_piece(Square square) {
-	state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece_at(square)][square];
+	if constexpr (update_hash) state_history.top().hash ^= ZOBRIST_PIECE_SQUARE[piece_at(square)][square];
 	pieces[piece_at(square)] &= ~square_to_bitboard(square);
 	board[square] = NO_PIECE;
 }
 
-void Position::move_piece(Piece piece, Square to, Square from) {
-	remove_piece(from);
-	place_piece(piece, to);
+template<bool update_hash>
+void Position::move_piece(Square to, Square from) {
+	Piece piece = piece_at(from);
+	remove_piece<update_hash>(from);
+	place_piece<update_hash>(piece, to);
+}
+
+u8 Position::castling_state(Bitboard from_to) const {
+	int white_oo = !(from_to & PositionState::WHITE_OO_MASK) << 3;
+	int white_ooo = !(from_to & PositionState::WHITE_OOO_MASK) << 2;
+	int black_oo = !(from_to & PositionState::BLACK_OO_MASK) << 1;
+	int black_ooo = !(from_to & PositionState::BLACK_OOO_MASK);
+	return white_oo | white_ooo | black_oo | black_ooo;
 }
 
 std::string Position::fen() const {
@@ -61,21 +73,19 @@ std::string Position::fen() const {
 	}
 
 	std::string castling_rights;
-	const Bitboard set_castling_state = castling_state();
+	const Bitboard set_castling_state = castling_state(state_history.peek().from_to);
 	if ((set_castling_state >> 3) & 0b1) castling_rights += "K";
 	if ((set_castling_state >> 2) & 0b1) castling_rights += "Q";
 	if ((set_castling_state >> 1) & 0b1) castling_rights += "k";
 	if (set_castling_state & 0b1) castling_rights += "q";
 	if (set_castling_state == 0) castling_rights = "-";
-	int full_move_clock = half_move_clock / 2;
-	if (side == WHITE) full_move_clock += 1;
 
 	fen << (side == WHITE ? " w " : " b ")
 		<< castling_rights
 		<< (ep_square() == NO_SQUARE ? " -" : " " + std::string(SQ_TO_STRING[ep_square()]))
 		<< " "
 		<< fifty_move_rule() << " "
-		<< full_move_clock;
+		<< "1";
 
 }
 
@@ -106,7 +116,7 @@ void Position::set_fen(const std::string& fen_string) {
 	for (char ch : position) {
 		if (isdigit(ch)) square += std::stoi(std::string(1, ch)) * EAST;
 		else if (ch == '/') square += SOUTH_SOUTH;
-		else place_piece(piece_from_char(ch), square++);
+		else place_piece<ENABLE_HASH_UPDATE>(piece_from_char(ch), square++);
 	}
 
 	state_history.top().from_to = PositionState::NO_CASTLING_MASK;
@@ -149,7 +159,7 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
 template<Color color>
 void Position::play(Move move) {
 	PositionState next_state = {};
-	next_state.from_to = state_history.peek().from_to | move.from() | move.to();
+	next_state.from_to = state_history.peek().from_to | square_to_bitboard(move.from()) | square_to_bitboard(move.to());
 	next_state.captured = piece_at(move.to());
 	next_state.hash = state_history.peek().hash;
 	next_state.fifty_move_rule = state_history.peek().fifty_move_rule + 1;
@@ -158,6 +168,49 @@ void Position::play(Move move) {
 	if (move.is_capture() || type_of(piece_at(move.from())) == PAWN)
 		next_state.fifty_move_rule = 0;
 
+	next_state.hash ^= ZOBRIST_COLOR[~color];
+	next_state.hash ^= ZOBRIST_COLOR[color];
+	next_state.hash ^= ZOBRIST_CASTLING_RIGHTS[castling_state(state_history.peek().from_to)];
+	next_state.hash ^= ZOBRIST_CASTLING_RIGHTS[castling_state(next_state.from_to)];
+
+	move_piece<ENABLE_HASH_UPDATE>(move.to(), move.from());
+
+	MoveType type = move.type();
+	switch (type) {
+		case DOUBLE_PUSH:
+			next_state.ep_square = move.from() + relative_dir<color, NORTH>();
+			break;
+		case OO:
+			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(h1, f1);
+			else move_piece<ENABLE_HASH_UPDATE>(h8, f8);
+			break;
+		case OOO:
+			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(a1, d1);
+			else move_piece<ENABLE_HASH_UPDATE>(a8, d8);
+			break;
+		case ENPASSANT:
+			remove_piece<ENABLE_HASH_UPDATE>(move.to() + relative_dir<color, SOUTH>());
+			next_state.captured = make_piece<color, PAWN>();
+			break;
+		case PR_KNIGHT | CAPTURE:
+		case PR_KNIGHT:
+			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, KNIGHT>(), move.to());
+			break;
+		case PR_BISHOP | CAPTURE:
+		case PR_BISHOP:
+			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, BISHOP>(), move.to());
+			break;
+		case PR_ROOK | CAPTURE:
+		case PR_ROOK:
+			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, ROOK>(), move.to());
+			break;
+		case PR_QUEEN | CAPTURE:
+		case PR_QUEEN:
+			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, QUEEN>(), move.to());
+			break;
+		default: break;
+	}
+	state_history.push(next_state);
 	side = ~side;
 }
 
@@ -165,6 +218,13 @@ template<Color color>
 void Position::undo(Move move) {
 	PositionState old_state = state_history.pop();
 }
+
+template void Position::place_piece<Position::ENABLE_HASH_UPDATE>(Piece piece, Square square);
+template void Position::place_piece<Position::DISABLE_HASH_UPDATE>(Piece piece, Square square);
+template void Position::remove_piece<Position::ENABLE_HASH_UPDATE>(Square square);
+template void Position::remove_piece<Position::DISABLE_HASH_UPDATE>(Square square);
+template void Position::move_piece<Position::ENABLE_HASH_UPDATE>(Square to, Square from);
+template void Position::move_piece<Position::DISABLE_HASH_UPDATE>(Square to, Square from);
 
 template void Position::play<WHITE>(Move move);
 template void Position::play<BLACK>(Move move);
