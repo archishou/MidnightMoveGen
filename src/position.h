@@ -66,10 +66,10 @@ public:
 	std::string fen();
 
 	template<Color color>
-	void play(Move& move);
+	void play(Move move);
 
 	template<Color color>
-	void undo(Move& move);
+	void undo(Move move);
 
 	friend std::ostream& operator<<(std::ostream& os, const Position& p);
 };

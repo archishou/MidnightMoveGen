@@ -113,7 +113,7 @@ Position::Position(const std::string& fen) {
 
 
 template<Color color>
-void Position::play(Move &move) {
+void Position::play(Move move) {
 	PositionState next_state = {};
 	next_state.from_to = state_history.peek().from_to | move.from() | move.to();
 	next_state.captured = piece_at(move.to());
@@ -128,11 +128,11 @@ void Position::play(Move &move) {
 }
 
 template<Color color>
-void Position::undo(Move &move) {
+void Position::undo(Move move) {
 	PositionState old_state = state_history.pop();
 }
 
-template void Position::play<WHITE>(Move &move);
-template void Position::play<BLACK>(Move &move);
-template void Position::undo<WHITE>(Move &move);
-template void Position::undo<BLACK>(Move &move);
+template void Position::play<WHITE>(Move move);
+template void Position::play<BLACK>(Move move);
+template void Position::undo<WHITE>(Move move);
+template void Position::undo<BLACK>(Move move);
