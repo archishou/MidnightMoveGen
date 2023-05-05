@@ -265,5 +265,6 @@ template void Position::move_piece<Position::DISABLE_HASH_UPDATE>(Square from, S
 
 template void Position::play<WHITE>(Move move);
 template void Position::play<BLACK>(Move move);
+
 template void Position::undo<WHITE>(Move move);
 template void Position::undo<BLACK>(Move move);

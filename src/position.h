@@ -37,7 +37,7 @@ public:
 
 class Position {
 public:
-//private:
+//private: commented out for debugging
 	Color side = WHITE;
 
 	std::array<Bitboard, NPIECES> pieces{};
@@ -63,11 +63,11 @@ public:
 
 	[[nodiscard]] u8 castling_state(Bitboard from_to) const;
 
-//public:
+//public: commented out for debugging
 	Position() = default;
 	explicit Position(const std::string& fen);
 
-	[[nodiscard]] inline Piece piece_at(Square square) const {return board[square]; }
+	[[nodiscard]] inline Piece piece_at(Square square) const { return board[square]; }
 
 	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
 	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }

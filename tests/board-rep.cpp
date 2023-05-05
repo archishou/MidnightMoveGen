@@ -5,7 +5,7 @@
 TEST_SUITE_BEGIN("board-rep");
 static constexpr ZobristHash START_POS_HASH = 0x2278897016d03aa6;
 
-TEST_CASE("play-undo-ep") {
+TEST_CASE("play-undo-white-ep") {
 	Position p(START_FEN);
 
 	CHECK_EQ(p.hash(), START_POS_HASH);
@@ -55,6 +55,67 @@ TEST_CASE("play-undo-ep") {
 	p.undo<WHITE>(move_1);
 
 	CHECK_EQ(p.hash(), START_POS_HASH);
+	CHECK_EQ(p.fen(), START_FEN);
+}
+
+TEST_CASE("play-undo-black-ep") {
+	Position p(START_FEN);
+
+	CHECK_EQ(p.fen(), START_FEN);
+
+	Move m1 = Move(h2, h3, QUIET);
+	string m1_fen = "rnbqkbnr/pppppppp/8/8/8/7P/PPPPPPP1/RNBQKBNR b KQkq - 0 1";
+
+	Move m2 = Move(d7, d5, DOUBLE_PUSH);
+	string m2_fen = "rnbqkbnr/ppp1pppp/8/3p4/8/7P/PPPPPPP1/RNBQKBNR w KQkq d6 0 1";
+
+	Move m3 = Move(g2, g3, QUIET);
+	string m3_fen = "rnbqkbnr/ppp1pppp/8/3p4/8/6PP/PPPPPP2/RNBQKBNR b KQkq - 0 1";
+
+	Move m4 = Move(d5, d4, QUIET);
+	string m4_fen = "rnbqkbnr/ppp1pppp/8/8/3p4/6PP/PPPPPP2/RNBQKBNR w KQkq - 0 1";
+
+	Move m5 = Move(e2, e4, DOUBLE_PUSH);
+	string m5_fen = "rnbqkbnr/ppp1pppp/8/8/3pP3/6PP/PPPP1P2/RNBQKBNR b KQkq e3 0 1";
+
+	Move m6 = Move(d4, e3, ENPASSANT);
+	string m6_fen = "rnbqkbnr/ppp1pppp/8/8/8/4p1PP/PPPP1P2/RNBQKBNR w KQkq - 0 1";
+
+	p.play<WHITE>(m1);
+	CHECK_EQ(p.fen(), m1_fen);
+
+	p.play<BLACK>(m2);
+	CHECK_EQ(p.fen(), m2_fen);
+
+	p.play<WHITE>(m3);
+	CHECK_EQ(p.fen(), m3_fen);
+
+	p.play<BLACK>(m4);
+	CHECK_EQ(p.fen(), m4_fen);
+
+	p.play<WHITE>(m5);
+	CHECK_EQ(p.fen(), m5_fen);
+
+	p.play<BLACK>(m6);
+	CHECK_EQ(p.fen(), m6_fen);
+
+	p.undo<BLACK>(m6);
+
+	CHECK_EQ(p.fen(), m5_fen);
+	p.undo<WHITE>(m5);
+
+	CHECK_EQ(p.fen(), m4_fen);
+	p.undo<BLACK>(m4);
+
+	CHECK_EQ(p.fen(), m3_fen);
+	p.undo<WHITE>(m3);
+
+	CHECK_EQ(p.fen(), m2_fen);
+	p.undo<BLACK>(m2);
+
+	CHECK_EQ(p.fen(), m1_fen);
+	p.undo<WHITE>(m1);
+
 	CHECK_EQ(p.fen(), START_FEN);
 }
 
