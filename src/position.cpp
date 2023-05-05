@@ -43,7 +43,7 @@ void Position::remove_piece(Square square) {
 }
 
 template<bool update_hash>
-void Position::move_piece(Square to, Square from) {
+void Position::move_piece(Square from, Square to) {
 	Piece piece = piece_at(from);
 	remove_piece<update_hash>(from);
 	place_piece<update_hash>(piece, to);
@@ -88,7 +88,7 @@ std::string Position::fen() const {
 		<< castling_rights
 		<< (ep_square() == NO_SQUARE ? " -" : " " + std::string(SQ_TO_STRING[ep_square()]))
 		<< " "
-		<< fifty_move_rule() << " "
+		<< "0" << " "
 		<< "1";
 	return fen.str();
 }
@@ -178,7 +178,7 @@ void Position::play(Move move) {
 	next_state.hash ^= ZOBRIST_CASTLING_RIGHTS[castling_state(next_state.from_to)];
 	state_history.push(next_state);
 
-	move_piece<ENABLE_HASH_UPDATE>(move.to(), move.from());
+	move_piece<ENABLE_HASH_UPDATE>(move.from(), move.to());
 
 	MoveType type = move.type();
 	switch (type) {
@@ -187,11 +187,11 @@ void Position::play(Move move) {
 			break;
 		case OO:
 			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(h1, f1);
-			else move_piece<ENABLE_HASH_UPDATE>(h8, f8);
+			else move_piece<ENABLE_HASH_UPDATE>(f8, h8);
 			break;
 		case OOO:
-			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(a1, d1);
-			else move_piece<ENABLE_HASH_UPDATE>(a8, d8);
+			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(d1, a1);
+			else move_piece<ENABLE_HASH_UPDATE>(d8, a8);
 			break;
 		case ENPASSANT:
 			remove_piece<ENABLE_HASH_UPDATE>(move.to() + relative_dir<color, SOUTH>());
@@ -222,18 +222,18 @@ template<Color color>
 void Position::undo(Move move) {
 	PositionState old_state = state_history.pop();
 
-	move_piece<DISABLE_HASH_UPDATE>(move.from(), move.to());
+	move_piece<DISABLE_HASH_UPDATE>(move.to(), move.from());
 	place_piece<DISABLE_HASH_UPDATE>(old_state.captured, move.to());
 
 	MoveType type = move.type();
 	switch (type) {
 		case OO:
-			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(f1, h1);
-			else move_piece<DISABLE_HASH_UPDATE>(f8, h8);
+			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(h1, f1);
+			else move_piece<DISABLE_HASH_UPDATE>(h8, f8);
 			break;
 		case OOO:
-			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(d1, a1);
-			else move_piece<DISABLE_HASH_UPDATE>(d8, a8);
+			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(a1, d1);
+			else move_piece<DISABLE_HASH_UPDATE>(a8, d8);
 			break;
 		case ENPASSANT:
 			remove_piece<DISABLE_HASH_UPDATE>(move.to());
@@ -260,8 +260,8 @@ template void Position::place_piece<Position::DISABLE_HASH_UPDATE>(Piece piece, 
 template void Position::remove_piece<Position::ENABLE_HASH_UPDATE>(Square square);
 template void Position::remove_piece<Position::DISABLE_HASH_UPDATE>(Square square);
 
-template void Position::move_piece<Position::ENABLE_HASH_UPDATE>(Square to, Square from);
-template void Position::move_piece<Position::DISABLE_HASH_UPDATE>(Square to, Square from);
+template void Position::move_piece<Position::ENABLE_HASH_UPDATE>(Square from, Square to);
+template void Position::move_piece<Position::DISABLE_HASH_UPDATE>(Square from, Square to);
 
 template void Position::play<WHITE>(Move move);
 template void Position::play<BLACK>(Move move);

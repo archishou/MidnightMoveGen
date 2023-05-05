@@ -57,7 +57,7 @@ public:
 	void remove_piece(Square square);
 
 	template<bool update_hash>
-	void move_piece(Square to, Square from);
+	void move_piece(Square from, Square to);
 
 	void reset();
 

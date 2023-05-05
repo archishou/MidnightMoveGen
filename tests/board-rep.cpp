@@ -6,7 +6,6 @@ TEST_SUITE_BEGIN("board-rep");
 static constexpr ZobristHash START_POS_HASH = 0x2278897016d03aa6;
 
 TEST_CASE("play-undo-ep") {
-
 	Position p(START_FEN);
 
 	CHECK_EQ(p.hash(), START_POS_HASH);
@@ -57,6 +56,53 @@ TEST_CASE("play-undo-ep") {
 
 	CHECK_EQ(p.hash(), START_POS_HASH);
 	CHECK_EQ(p.fen(), START_FEN);
+}
+
+TEST_CASE("play-undo-castling") {
+	Position p(START_FEN);
+
+	Move m1 = Move(e2, e4, DOUBLE_PUSH);
+	std::string m1_fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1";
+
+	Move m2 = Move(e7, e5, DOUBLE_PUSH);
+	std::string m2_fen = "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 1";
+
+	Move m3 = Move(f1, c4, QUIET);
+	std::string m3_fen = "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 0 1";
+
+	Move m4 = Move(f8, c5, QUIET);
+	std::string m4_fen = "rnbqk1nr/pppp1ppp/8/2b1p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 0 1";
+
+	Move m5 = Move(g1, f3, QUIET);
+	std::string m5_fen = "rnbqk1nr/pppp1ppp/8/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 1";
+
+	Move m6 = Move(g8, f6, QUIET);
+	std::string m6_fen = "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1";
+
+	Move m7 = Move(e1, g1, OO);
+	std::string m7_fen = "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 0 1";
+
+	p.play<WHITE>(m1);
+	CHECK_EQ(p.fen(), m1_fen);
+
+	p.play<BLACK>(m2);
+	CHECK_EQ(p.fen(), m2_fen);
+
+	p.play<WHITE>(m3);
+	CHECK_EQ(p.fen(), m3_fen);
+
+	p.play<BLACK>(m4);
+	CHECK_EQ(p.fen(), m4_fen);
+
+	p.play<WHITE>(m5);
+	CHECK_EQ(p.fen(), m5_fen);
+
+	p.play<BLACK>(m6);
+	CHECK_EQ(p.fen(), m6_fen);
+
+	p.play<WHITE>(m7);
+	CHECK_EQ(p.fen(), m7_fen);
+	std::cout << p << std::endl;
 }
 
 TEST_SUITE_END();
