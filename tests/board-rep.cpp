@@ -195,4 +195,27 @@ TEST_CASE("play-undo-short-castle") {
 	CHECK_EQ(p.fen(), START_FEN);
 }
 
+TEST_CASE("play-undo-long-castle") {
+	string start_fen = "r3kbnr/ppp1pppp/1nbq4/8/3pP3/1NBQ2PP/PPPP1P2/R3KBNR w KQkq - 0 1";
+	Position p(start_fen);
+
+	Move m1 = Move(e1, c1, OOO);
+	string m1_fen = "r3kbnr/ppp1pppp/1nbq4/8/3pP3/1NBQ2PP/PPPP1P2/2KR1BNR b kq - 0 1";
+
+	Move m2 = Move(e8, c8, OOO);
+	string m2_fen = "2kr1bnr/ppp1pppp/1nbq4/8/3pP3/1NBQ2PP/PPPP1P2/2KR1BNR w - - 0 1";
+
+	p.play<WHITE>(m1);
+	CHECK_EQ(p.fen(), m1_fen);
+
+	p.play<BLACK>(m2);
+	CHECK_EQ(p.fen(), m2_fen);
+	p.undo<BLACK>(m2);
+
+	CHECK_EQ(p.fen(), m1_fen);
+	p.undo<WHITE>(m1);
+
+	CHECK_EQ(p.fen(), start_fen);
+}
+
 TEST_SUITE_END();
