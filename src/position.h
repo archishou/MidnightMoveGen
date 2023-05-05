@@ -26,7 +26,7 @@ private:
 
 	Bitboard from_to{};
 	Piece captured{};
-	Square ep_square{};
+	Square ep_square = NO_SQUARE;
 	u16 fifty_move_rule{};
 	ZobristHash hash{};
 
