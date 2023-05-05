@@ -187,11 +187,11 @@ void Position::play(Move move) {
 			break;
 		case OO:
 			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(h1, f1);
-			else move_piece<ENABLE_HASH_UPDATE>(f8, h8);
+			else move_piece<ENABLE_HASH_UPDATE>(h8, f8);
 			break;
 		case OOO:
-			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(d1, a1);
-			else move_piece<ENABLE_HASH_UPDATE>(d8, a8);
+			if constexpr (color == WHITE) move_piece<ENABLE_HASH_UPDATE>(a1, d1);
+			else move_piece<ENABLE_HASH_UPDATE>(a8, d8);
 			break;
 		case ENPASSANT:
 			remove_piece<ENABLE_HASH_UPDATE>(move.to() + relative_dir<color, SOUTH>());
@@ -228,12 +228,12 @@ void Position::undo(Move move) {
 	MoveType type = move.type();
 	switch (type) {
 		case OO:
-			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(h1, f1);
-			else move_piece<DISABLE_HASH_UPDATE>(h8, f8);
+			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(f1, h1);
+			else move_piece<DISABLE_HASH_UPDATE>(f8, h8);
 			break;
 		case OOO:
-			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(a1, d1);
-			else move_piece<DISABLE_HASH_UPDATE>(a8, d8);
+			if constexpr (color == WHITE) move_piece<DISABLE_HASH_UPDATE>(d1, a1);
+			else move_piece<DISABLE_HASH_UPDATE>(d8, a8);
 			break;
 		case ENPASSANT:
 			remove_piece<DISABLE_HASH_UPDATE>(move.to());

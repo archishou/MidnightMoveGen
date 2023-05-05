@@ -58,7 +58,7 @@ TEST_CASE("play-undo-ep") {
 	CHECK_EQ(p.fen(), START_FEN);
 }
 
-TEST_CASE("play-undo-castling") {
+TEST_CASE("play-undo-short-castle") {
 	Position p(START_FEN);
 
 	Move m1 = Move(e2, e4, DOUBLE_PUSH);
@@ -82,6 +82,9 @@ TEST_CASE("play-undo-castling") {
 	Move m7 = Move(e1, g1, OO);
 	std::string m7_fen = "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 0 1";
 
+	Move m8 = Move(e8, g8, OO);
+	std::string m8_fen = "rnbq1rk1/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 w - - 0 1";
+
 	p.play<WHITE>(m1);
 	CHECK_EQ(p.fen(), m1_fen);
 
@@ -102,7 +105,33 @@ TEST_CASE("play-undo-castling") {
 
 	p.play<WHITE>(m7);
 	CHECK_EQ(p.fen(), m7_fen);
-	std::cout << p << std::endl;
+
+	p.play<BLACK>(m8);
+	CHECK_EQ(p.fen(), m8_fen);
+	p.undo<BLACK>(m8);
+
+	CHECK_EQ(p.fen(), m7_fen);
+	p.undo<WHITE>(m7);
+
+	CHECK_EQ(p.fen(), m6_fen);
+	p.undo<BLACK>(m6);
+
+	CHECK_EQ(p.fen(), m5_fen);
+	p.undo<WHITE>(m5);
+
+	CHECK_EQ(p.fen(), m4_fen);
+	p.undo<BLACK>(m4);
+
+	CHECK_EQ(p.fen(), m3_fen);
+	p.undo<WHITE>(m3);
+
+	CHECK_EQ(p.fen(), m2_fen);
+	p.undo<BLACK>(m2);
+
+	CHECK_EQ(p.fen(), m1_fen);
+	p.undo<WHITE>(m1);
+
+	CHECK_EQ(p.fen(), START_FEN);
 }
 
 TEST_SUITE_END();
