@@ -222,7 +222,7 @@ template<Color color>
 void Position::undo(Move move) {
 	PositionState old_state = state_history.pop();
 
-	move_piece<DISABLE_HASH_UPDATE>(move.to(), move.from());
+	place_piece<DISABLE_HASH_UPDATE>(piece_at(move.to()), move.from());
 	place_piece<DISABLE_HASH_UPDATE>(old_state.captured, move.to());
 
 	MoveType type = move.type();
