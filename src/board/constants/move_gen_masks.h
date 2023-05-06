@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../types/bitboard.h"
-#include "../types/board_rep_types.h"
+#include "../types/board_types.h"
 
 constexpr Bitboard WHITE_OO_BLOCKERS_MASK	= 0x60;
 constexpr Bitboard WHITE_OOO_DANGER_MASK	= 0xC;

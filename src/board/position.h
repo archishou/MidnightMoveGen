@@ -4,12 +4,12 @@
 #pragma once
 #include <string>
 #include "constants/misc_constants.h"
-#include "types.h"
+#include "../types.h"
 #include "types/bitboard.h"
 #include "constants/misc_constants.h"
 #include "types/move.h"
 #include "utils/stack.h"
-#include "types/board_rep_types.h"
+#include "types/board_types.h"
 
 class Position;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../types/bitboard.h"
-#include "../types/board_rep_types.h"
+#include "../types/board_types.h"
 
 constexpr Bitboard KING_ATTACKS[NSQUARES] = {
 		0x302, 0x705, 0xe0a, 0x1c14,

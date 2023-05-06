@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types/board_rep_types.h"
+#include "../types/board_types.h"
 
 constexpr Bitboard MASK_FILE[NFILES] = {
 		0x101010101010101, 0x202020202020202, 0x404040404040404, 0x808080808080808,

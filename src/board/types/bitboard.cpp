@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <bitset>
-#include "../types.h"
+#include "../../types.h"
 #include "bitboard.h"
 
 void print_bitboard(Bitboard bitboard) {

@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "lib/doctests.h"
-#include "../src/position.h"
+#include "../src/board/position.h"
 
 TEST_SUITE_BEGIN("board-rep");
 static constexpr ZobristHash START_POS_HASH = 0x2278897016d03aa6;

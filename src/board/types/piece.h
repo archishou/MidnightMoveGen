@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types.h"
+#include "../../types.h"
 
 constexpr u32 NPIECE_TYPES = 7;
 enum PieceType : u32 {

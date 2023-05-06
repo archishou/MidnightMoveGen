@@ -1,5 +1,5 @@
 #pragma once
-#include "../types.h"
+#include "../../types.h"
 
 using ZobristHash = u64;
 using Bitboard = u64;

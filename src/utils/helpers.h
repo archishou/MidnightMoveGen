@@ -5,6 +5,6 @@
 
 #include <string>
 #include <vector>
-#include "../constants/misc_constants.h"
+#include "../board/constants/misc_constants.h"
 
 std::vector<std::string> split(const std::string& s, const std::string& delimiter);
