@@ -5,20 +5,14 @@
 #include "../board/types/bitboard.h"
 #include "../board/types/piece.h"
 #include "../../tests/lib/doctests.h"
+#include "../board/constants/zobrist_constants.h"
+#include "iostream"
 
 namespace tables {
 	namespace {
-		struct SquareData {
-			Bitboard attack_mask{};
-			u32 offset{};
-		};
 
-		struct AttackData {
-			array<SquareData, NSQUARES> data{};
-			u32 table_size{};
-		};
-
-		constexpr Bitboard FILLED_BOARD = 0XFFFFFFFFFFFFFFFF;
+		constexpr usize ROOK_TABLE_SIZE = 4096;
+		constexpr usize BISHOP_TABLE_SIZE = 512;
 
 		constexpr array<i32, NSQUARES> ROOK_SHIFTS = {
 				52, 53, 53, 53, 53, 53, 53, 52,
@@ -28,18 +22,18 @@ namespace tables {
 				53, 54, 54, 54, 54, 54, 54, 53,
 				53, 54, 54, 54, 54, 54, 54, 53,
 				53, 54, 54, 54, 54, 54, 54, 53,
-				52, 53, 53, 53, 53, 53, 53, 52
+				52, 53, 53, 53, 53, 53, 53, 52,
 		};
 
 		constexpr array<i32, NSQUARES> BISHOP_SHIFTS = {
-				59, 60, 59, 59, 59, 59, 60, 58,
-				60, 60, 59, 59, 59, 59, 60, 60,
+				58, 59, 59, 59, 59, 59, 59, 58,
+				59, 59, 59, 59, 59, 59, 59, 59,
 				59, 59, 57, 57, 57, 57, 59, 59,
 				59, 59, 57, 55, 55, 57, 59, 59,
 				59, 59, 57, 55, 55, 57, 59, 59,
-				59, 59, 57, 57, 57, 57, 59, 60,
-				60, 60, 59, 59, 59, 59, 60, 60,
-				59, 60, 59, 59, 59, 59, 60, 58
+				59, 59, 57, 57, 57, 57, 59, 59,
+				59, 59, 59, 59, 59, 59, 59, 59,
+				58, 59, 59, 59, 59, 59, 59, 58,
 		};
 
 		constexpr array<Bitboard, NSQUARES> KING_ATTACKS = {
@@ -116,41 +110,41 @@ namespace tables {
 		};
 
 		constexpr array<Bitboard, NSQUARES> BISHOP_MAGICS = {
-				0x69906270549A3405, 0xE846197A0E88067F, 0x54D7C7FB06DE5827, 0xF4380209C8E966FE,
-				0xDF33F39ECD91FCF6, 0xC580F3DFFCC85DB4, 0xC6A89809B600286C, 0xC1DE00D4289BFFC0,
-				0x7BDA249AC632C811, 0x83534631B40CA406, 0x6EA35817F035775C, 0x6DB23BEF4DF5645E,
-				0x5555D3FB9F934CD3, 0xE6766DFD0FC609F8, 0xFC2EB0C6C58C8021, 0x6786D25EACCFDF72,
-				0x86E8324A02CA8AEF, 0xF91A13391D2D97F1, 0x131810CFFD99BE90, 0x8537F35C05EFA08B,
-				0x5D598243FF5FD71A, 0x1D09FFBF00FAD72B, 0xD16A319977FC05FD, 0x8D6601E599347F90,
-				0x4404409F5EC1F3DB, 0x25A7EC287E0BB817, 0x22F9F7FF5AF54401, 0x00200302080070E0,
-				0x3D1900D006FFC014, 0x3958E700A5FEBEFB, 0xD48AA0E6BBFC0214, 0x56BBF68FC6CD5C13,
-				0xD4CFE69F216FF3C9, 0xE46CEF960C704413, 0x7985CEB00428057B, 0x4900220082080080,
-				0x028422C010040100, 0x119377F9FFF6BEEB, 0x2787B8DA98AC0221, 0xCF340AB7795DFC80,
-				0x5F4D27A008D84FE9, 0x4339FF0FE25ED893, 0x88F477A178045010, 0x7B293EDFD1015806,
-				0x1F61DFF2047F5BFF, 0xE2E1B97D1A009100, 0x9C9F7BCC878F1A08, 0xABFFCA859DA3CDFE,
-				0x1CD806CBB423E49B, 0x5EE7FB86BD527D9B, 0xBB0A8BC1EAB02192, 0xB75E295A3FCE452C,
-				0x911D2E51E6060430, 0x133E017175D1FB87, 0xD7C00065234350D1, 0x220029F586970AD8,
-				0xA6F001938E193FDB, 0xDF725BF4FA4505B6, 0xE5DE50FA3FDC8C72, 0x3CE77ED6760FC3D0,
-				0x4CAD71659E41C408, 0xE6766DFD0FC609F8, 0x45D7FEA873649EA8, 0xA8806CA2E576C9E4
+				0x0002020202020200, 0x0002020202020000, 0x0004010202000000, 0x0004040080000000,
+				0x0001104000000000, 0x0000821040000000, 0x0000410410400000, 0x0000104104104000,
+				0x0000040404040400, 0x0000020202020200, 0x0000040102020000, 0x0000040400800000,
+				0x0000011040000000, 0x0000008210400000, 0x0000004104104000, 0x0000002082082000,
+				0x0004000808080800, 0x0002000404040400, 0x0001000202020200, 0x0000800802004000,
+				0x0000800400A00000, 0x0000200100884000, 0x0000400082082000, 0x0000200041041000,
+				0x0002080010101000, 0x0001040008080800, 0x0000208004010400, 0x0000404004010200,
+				0x0000840000802000, 0x0000404002011000, 0x0000808001041000, 0x0000404000820800,
+				0x0001041000202000, 0x0000820800101000, 0x0000104400080800, 0x0000020080080080,
+				0x0000404040040100, 0x0000808100020100, 0x0001010100020800, 0x0000808080010400,
+				0x0000820820004000, 0x0000410410002000, 0x0000082088001000, 0x0000002011000800,
+				0x0000080100400400, 0x0001010101000200, 0x0002020202000400, 0x0001010101000200,
+				0x0000410410400000, 0x0000208208200000, 0x0000002084100000, 0x0000000020880000,
+				0x0000001002020000, 0x0000040408020000, 0x0004040404040000, 0x0002020202020000,
+				0x0000104104104000, 0x0000002082082000, 0x0000000020841000, 0x0000000000208800,
+				0x0000000010020200, 0x0000000404080200, 0x0000040404040400, 0x0002020202020200
 		};
 
 		constexpr array<Bitboard, NSQUARES> ROOK_MAGICS = {
-				0x2080002040068490, 0x06C0021001200C40, 0x288009300280A000, 0x0100089521003000,
-				0x6100040801003082, 0x65FFEBC5FFEEE7F0, 0x0400080C10219112, 0x0200014434060003,
-				0x96CD8008C00379D9, 0x2A06002101FF81CF, 0x7BCA0020802E0641, 0xDAE2FFEFFD0020BA,
-				0x62E20005E0D200AA, 0x2302000830DA0044, 0xE81C002CE40A3028, 0xC829FFFAFD8BBC06,
-				0x12C57E800740089D, 0xA574FDFFE13A81FD, 0xF331B1FFE0BF79FE, 0x0000A1003001010A,
-				0x7CD4E2000600264F, 0x0299010004000228, 0xA36CEBFFAE0FA825, 0x9A87E9FFF4408405,
-				0x0BAEC0007FF8EB82, 0xF81909BDFFE18205, 0x0391AF45001FFF01, 0xD000900100290021,
-				0x2058480080040080, 0x6DCDFFA2002C38D0, 0xC709C80C00951002, 0xB70EE5420008FF84,
-				0x6E254003897FFCE6, 0xD91D21FE7E003901, 0xA0D1EFFF857FE001, 0x7C45FFC022001893,
-				0x8180818800800400, 0x2146001CB20018B0, 0x843C20E7DBFF8FEE, 0x09283C127A00083F,
-				0x01465F8CC0078000, 0xA30A50075FFD3FFF, 0x39593D8231FE0020, 0x8129FE58405E000F,
-				0x1140850008010011, 0x2302000830DA0044, 0xD706971819F400B0, 0xA0B2A3BC86E20004,
-				0x10FFF67AD3B88200, 0x10FFF67AD3B88200, 0x5076D15DBDF97E00, 0xD861C0D1FFC8DE00,
-				0x5CA002003B305E00, 0x84FFFFCF19605740, 0xD26F0FA80A28AC00, 0x342F7E87013BFA00,
-				0x63BB9E8FBF01FE7A, 0x260ADF40007B9101, 0x2013CEFF6000BEF7, 0x13AD6200060EBFE6,
-				0x2D4DFFFF28F4D9FA, 0x766200004B3A92F6, 0xB6AE6FF7FE8A070C, 0xD065F4839BFC4B02
+				0x0080001020400080, 0x0040001000200040, 0x0080081000200080, 0x0080040800100080,
+				0x0080020400080080, 0x0080010200040080, 0x0080008001000200, 0x0080002040800100,
+				0x0000800020400080, 0x0000400020005000, 0x0000801000200080, 0x0000800800100080,
+				0x0000800400080080, 0x0000800200040080, 0x0000800100020080, 0x0000800040800100,
+				0x0000208000400080, 0x0000404000201000, 0x0000808010002000, 0x0000808008001000,
+				0x0000808004000800, 0x0000808002000400, 0x0000010100020004, 0x0000020000408104,
+				0x0000208080004000, 0x0000200040005000, 0x0000100080200080, 0x0000080080100080,
+				0x0000040080080080, 0x0000020080040080, 0x0000010080800200, 0x0000800080004100,
+				0x0000204000800080, 0x0000200040401000, 0x0000100080802000, 0x0000080080801000,
+				0x0000040080800800, 0x0000020080800400, 0x0000020001010004, 0x0000800040800100,
+				0x0000204000808000, 0x0000200040008080, 0x0000100020008080, 0x0000080010008080,
+				0x0000040008008080, 0x0000020004008080, 0x0000010002008080, 0x0000004081020004,
+				0x0000204000800080, 0x0000200040008080, 0x0000100020008080, 0x0000080010008080,
+				0x0000040008008080, 0x0000020004008080, 0x0000800100020080, 0x0000800041000080,
+				0x00FFFCDDFCED714A, 0x007FFCDDFCED714A, 0x003FFFCDFFD88096, 0x0000040810002101,
+				0x0001000204080011, 0x0001000204000801, 0x0001000082000401, 0x0001FFFAABFAD1A2
 		};
 
 		[[nodiscard]] constexpr Bitboard board_edge(Direction D) {
@@ -159,23 +153,51 @@ namespace tables {
 			else if (D == EAST) return MASK_FILE[HFILE];
 			else if (D == WEST) return MASK_FILE[AFILE];
 
-			else if (D == NORTH_EAST) return board_edge(NORTH) | board_edge(EAST);
-			else if (D == NORTH_WEST) return board_edge(NORTH) | board_edge(WEST);
-			else if (D == SOUTH_EAST) return board_edge(SOUTH) | board_edge(EAST);
-			else if (D == SOUTH_WEST) return board_edge(SOUTH) | board_edge(WEST);
+			else if (D == NORTH_EAST) return MASK_RANK[RANK8] | MASK_FILE[HFILE];
+			else if (D == NORTH_WEST) return MASK_RANK[RANK8] | MASK_FILE[AFILE];
+			else if (D == SOUTH_EAST) return MASK_RANK[RANK1] | MASK_FILE[HFILE];
+			else if (D == SOUTH_WEST) return MASK_RANK[RANK1] | MASK_FILE[AFILE];
 
 			return 0;
 		}
 
-		[[nodiscard]] constexpr Bitboard generate_sliding_attacks(Square sq, Direction direction, Bitboard occupancy) {
+		[[nodiscard]] consteval Bitboard empty_board_rook_attacks(Square square) {
+			return MASK_RANK[rank_of(square)] ^ MASK_FILE[file_of(square)];
+		}
+
+		[[nodiscard]] consteval Bitboard empty_board_bishop_attacks(Square square) {
+			return MASK_DIAGONAL[diagonal_of(square)] ^ MASK_ANTI_DIAGONAL[anti_diagonal_of(square)];
+		}
+
+		[[nodiscard]] consteval array<Bitboard, NSQUARES> generate_rook_attack_masks() {
+			array<Bitboard, NSQUARES> rook_attack_masks{};
+			for (Square sq = a1; sq < NSQUARES; sq++) {
+				Bitboard edges = 	((board_edge(NORTH) | board_edge(SOUTH)) & ~MASK_RANK[rank_of(sq)]) |
+									((board_edge(EAST) 	| board_edge(WEST))  & ~MASK_FILE[file_of(sq)]);
+				rook_attack_masks[sq] = empty_board_rook_attacks(sq) & ~edges;
+			}
+			return rook_attack_masks;
+		}
+
+		[[nodiscard]] consteval array<Bitboard, NSQUARES> generate_bishop_attack_masks() {
+			array<Bitboard, NSQUARES> bishop_attack_masks{};
+			for (Square sq = a1; sq < NSQUARES; sq++) {
+				Bitboard edges = board_edge(NORTH) | board_edge(SOUTH) | board_edge(EAST) | board_edge(WEST);
+				bishop_attack_masks[sq] = empty_board_bishop_attacks(sq) & ~edges;
+			}
+			return bishop_attack_masks;
+		}
+
+		constexpr array<Bitboard, NSQUARES> rook_attack_masks = generate_rook_attack_masks();
+		constexpr array<Bitboard, NSQUARES> bishop_attack_masks = generate_bishop_attack_masks();
+
+		[[nodiscard]] constexpr Bitboard generate_slow_sliding_attacks(Square sq, Direction direction, Bitboard occupancy) {
 			Bitboard attacks{};
 
 			Bitboard blockers = board_edge(direction);
 			Bitboard square_bb = square_to_bitboard(sq);
 
-			if ((blockers & square_bb) != 0) {
-				return attacks;
-			}
+			if ((blockers & square_bb) != 0) return attacks;
 
 			blockers |= occupancy;
 
@@ -187,102 +209,106 @@ namespace tables {
 			return attacks;
 		}
 
-		[[nodiscard]] consteval AttackData generate_orthogonal_slider_data() {
-			AttackData dst{};
+		[[nodiscard]] constexpr Bitboard generate_slow_rook_attacks(Square sq, Bitboard occupancy) {
+			return generate_slow_sliding_attacks(sq, NORTH, occupancy) |
+				   generate_slow_sliding_attacks(sq, SOUTH, occupancy) |
+				   generate_slow_sliding_attacks(sq, EAST, occupancy) |
+				   generate_slow_sliding_attacks(sq, WEST, occupancy);
+		}
+
+		[[nodiscard]] constexpr Bitboard generate_slow_bishop_attacks(Square sq, Bitboard occupancy) {
+			return generate_slow_sliding_attacks(sq, NORTH_EAST, occupancy) |
+				   generate_slow_sliding_attacks(sq, NORTH_WEST, occupancy) |
+				   generate_slow_sliding_attacks(sq, SOUTH_EAST, occupancy) |
+				   generate_slow_sliding_attacks(sq, SOUTH_WEST, occupancy);
+		}
+
+
+		[[nodiscard]] constexpr array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> generate_rook_attack_table() {
+			array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> rook_attack_table{};
+			Bitboard subset{}, index{};
 
 			for (Square sq = a1; sq < NSQUARES; sq++) {
-				dst.data[sq].attack_mask = FILLED_BOARD;
-
-				for (const Direction dir: {NORTH, SOUTH, EAST, WEST}) {
-					const Bitboard attacks = generate_sliding_attacks(sq, dir, 0);
-					dst.data[sq].attack_mask &= ~(attacks & ~board_edge(dir));
-				}
-
-				dst.data[sq].offset = dst.table_size;
-				dst.table_size += 1 << (NSQUARES - ROOK_SHIFTS[sq]);
+				subset = 0;
+				do {
+					index = subset;
+					index = index * ROOK_MAGICS[sq];
+					index = index >> ROOK_SHIFTS[sq];
+					rook_attack_table[sq][index] = generate_slow_rook_attacks(sq, subset);
+					subset = (subset - rook_attack_masks[sq]) & rook_attack_masks[sq];
+				} while (subset);
 			}
-
-			return dst;
+			return rook_attack_table;
 		}
 
-		[[nodiscard]] consteval AttackData generate_diagonal_slider_data() {
-			AttackData dst{};
+		[[nodiscard]] constexpr array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> generate_bishop_attack_table() {
+			array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> bishop_attack_table{};
+			Bitboard subset{}, index{};
 
 			for (Square sq = a1; sq < NSQUARES; sq++) {
-				dst.data[sq].attack_mask = FILLED_BOARD;
-
-				for (const Direction dir: {NORTH_EAST, NORTH_WEST, SOUTH_EAST, SOUTH_WEST}) {
-					const Bitboard attacks = generate_sliding_attacks(sq, dir, 0);
-					dst.data[sq].attack_mask &= ~(attacks & ~board_edge(dir));
-				}
-
-				dst.data[sq].offset = dst.table_size;
-				dst.table_size += 1 << (NSQUARES - BISHOP_SHIFTS[sq]);
+				subset = 0;
+				do {
+					index = subset;
+					index = index * BISHOP_MAGICS[sq];
+					index = index >> BISHOP_SHIFTS[sq];
+					bishop_attack_table[sq][index] = generate_slow_bishop_attacks(sq, subset);
+					subset = (subset - bishop_attack_masks[sq]) & bishop_attack_masks[sq];
+				} while (subset);
 			}
-
-			return dst;
+			return bishop_attack_table;
 		}
 
-		constexpr AttackData rook_data = generate_orthogonal_slider_data();
-		constexpr AttackData bishop_data = generate_diagonal_slider_data();
+		const array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> rook_attack_table = generate_rook_attack_table();
 
-
-		[[nodiscard]] inline u64 rook_idx(Bitboard occupancy, Square src) {
-			const auto s = static_cast<i32>(src);
-
-			const auto &data = rook_data.data[s];
-
-			const auto magic = ROOK_MAGICS[s];
-			const auto shift = ROOK_SHIFTS[s];
-
-			return ((occupancy | data.attack_mask) * magic) >> shift;
+		constexpr Bitboard get_rook_attacks(Square square, Bitboard occ) {
+			usize index = ((occ & rook_attack_masks[square]) * ROOK_MAGICS[square]) >> ROOK_SHIFTS[square];
+			return rook_attack_table[square][index];
 		}
 
-		[[nodiscard]] inline u64 bishop_idx(Bitboard occupancy, Square src) {
-			const auto s = static_cast<i32>(src);
+		const array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> bishop_attack_table = generate_bishop_attack_table();
 
-			const auto &data = bishop_data.data[s];
-
-			const auto magic = BISHOP_MAGICS[s];
-			const auto shift = BISHOP_SHIFTS[s];
-
-			return ((occupancy | data.attack_mask) * magic) >> shift;
+		constexpr Bitboard get_bishop_attacks(Square square, Bitboard occ) {
+			usize index = ((occ & bishop_attack_masks[square]) * BISHOP_MAGICS[square]) >> BISHOP_SHIFTS[square];
+			return bishop_attack_table[square][index];
 		}
-
-		/*
-		[[nodiscard]] inline Bitboard getRookAttacks(Square src, Bitboard occupancy) {
-			const auto s = static_cast<i32>(src);
-
-			const auto &data = black_magic::RookData.data[s];
-			const auto idx = rook_idx(occupancy, src);
-
-			return RookAttacks[data.offset + idx];
-		}
-
-		[[nodiscard]] inline Bitboard getBishopAttacks(Square src, Bitboard occupancy) {
-			const auto s = static_cast<i32>(src);
-
-			const auto &data = black_magic::BishopData.data[s];
-			const auto idx = bishop_idx(occupancy, src);
-
-			return BishopAttacks[data.offset + idx];
-		}
-		 */
 
 	} // anon namespace
-	TEST_SUITE_BEGIN("tables");
+
+	template<PieceType piece_type, Color color = WHITE>
+	Bitboard attacks(Square sq, Bitboard occupancy = 0) {
+		if constexpr (piece_type == PAWN) {
+			if constexpr (color == WHITE) return WHITE_PAWN_ATTACKS[sq];
+			return BLACK_PAWN_ATTACKS[sq];
+		}
+		else if constexpr (piece_type == KNIGHT) return KNIGHT_ATTACKS[sq];
+		else if constexpr (piece_type == BISHOP) return get_bishop_attacks(sq, occupancy);
+		else if constexpr (piece_type == ROOK) return get_rook_attacks(sq, occupancy);
+		else if constexpr (piece_type == QUEEN) return get_bishop_attacks(sq, occupancy) | get_rook_attacks(sq, occupancy);
+		else if constexpr (piece_type == KING) return KING_ATTACKS[sq];
+		return 0;
+	}
+
+	TEST_SUITE_BEGIN("table-helpers");
 
 	TEST_CASE("generate-sliding-attacks") {
-		CHECK_EQ(generate_sliding_attacks(a5, NORTH, 0), 0x101010000000000);
-		CHECK_EQ(generate_sliding_attacks(a5, SOUTH, 0), 0x1010101);
-		CHECK_EQ(generate_sliding_attacks(e4, NORTH, 0), 0x1010101000000000);
-		CHECK_EQ(generate_sliding_attacks(e4, SOUTH, 0), 0x101010);
-		CHECK_EQ(generate_sliding_attacks(e4, EAST, 0), 0xe0000000);
-		CHECK_EQ(generate_sliding_attacks(e4, WEST, 0), 0xf000000);
-		CHECK_EQ(generate_sliding_attacks(e4, NORTH_EAST, 0), 0x80402000000000);
-		CHECK_EQ(generate_sliding_attacks(e4, NORTH_WEST, 0), 0x102040800000000);
-		CHECK_EQ(generate_sliding_attacks(e4, SOUTH_EAST, 0), 0x204080);
-		CHECK_EQ(generate_sliding_attacks(e4, SOUTH_WEST, 0), 0x80402);
+		CHECK_EQ(generate_slow_sliding_attacks(a5, NORTH, 0), 0x101010000000000);
+		CHECK_EQ(generate_slow_sliding_attacks(a5, SOUTH, 0), 0x1010101);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, NORTH, 0), 0x1010101000000000);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, SOUTH, 0), 0x101010);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, EAST, 0), 0xe0000000);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, WEST, 0), 0xf000000);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, NORTH_EAST, 0), 0x80402000000000);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, NORTH_WEST, 0), 0x102040800000000);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, SOUTH_EAST, 0), 0x204080);
+		CHECK_EQ(generate_slow_sliding_attacks(e4, SOUTH_WEST, 0), 0x80402);
+	}
+
+	TEST_CASE("empty-board-attacks") {
+		CHECK_EQ(empty_board_rook_attacks(f3), 0x2020202020df2020);
+		CHECK_EQ(empty_board_rook_attacks(f5), 0x202020df20202020);
+
+		CHECK_EQ(empty_board_bishop_attacks(f3), 0x102048850005088);
+		CHECK_EQ(empty_board_bishop_attacks(f5), 0x488500050880402);
 	}
 
 	TEST_SUITE_END();

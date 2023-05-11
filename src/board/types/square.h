@@ -55,6 +55,18 @@ constexpr File file_of(Square s) {
 	return File(s & 0b111);
 }
 
+constexpr int diagonal_of(Square s) {
+	return 7 + rank_of(s) - file_of(s);
+}
+
+constexpr int anti_diagonal_of(Square s) {
+	return rank_of(s) + file_of(s);
+}
+
+constexpr Square create_square(File f, Rank r) {
+	return Square(r << 3 | f);
+}
+
 inline const string SQ_TO_STRING[NSQUARES + 1] = {
 		"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
 		"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
