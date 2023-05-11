@@ -257,14 +257,14 @@ namespace tables {
 			return bishop_attack_table;
 		}
 
-		const array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> rook_attack_table = generate_rook_attack_table();
+		constexpr array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> rook_attack_table = generate_rook_attack_table();
 
 		constexpr Bitboard get_rook_attacks(Square square, Bitboard occ) {
 			usize index = ((occ & rook_attack_masks[square]) * ROOK_MAGICS[square]) >> ROOK_SHIFTS[square];
 			return rook_attack_table[square][index];
 		}
 
-		const array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> bishop_attack_table = generate_bishop_attack_table();
+		constexpr array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> bishop_attack_table = generate_bishop_attack_table();
 
 		constexpr Bitboard get_bishop_attacks(Square square, Bitboard occ) {
 			usize index = ((occ & bishop_attack_masks[square]) * BISHOP_MAGICS[square]) >> BISHOP_SHIFTS[square];

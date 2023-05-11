@@ -3,7 +3,7 @@ EXE           = midnight-move-gen
 SOURCES      := $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp)
 SOURCES      += $(wildcard tests/*.cpp)
 
-CXXFLAGS     := -O3 -Isrc -flto -std=c++20 -march=native -Wall -Wextra -Wno-deprecated -pedantic -DNDEBUG
+CXXFLAGS     := -O3 -Isrc -flto -std=c++20 -fconstexpr-steps=900000000 -march=native -Wall -Wextra -Wno-deprecated -pedantic -DNDEBUG
 LDFLAGS      :=
 
 CXX          := g++
