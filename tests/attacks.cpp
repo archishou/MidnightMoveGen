@@ -6,7 +6,7 @@
 #include "iostream"
 #include "fstream"
 #include "../src/utils/helpers.h"
-#include "../src/move_gen/tables.h"
+#include "../src/move_gen/tables/attack_tables.h"
 
 TEST_SUITE_BEGIN("attacks");
 

@@ -1,12 +1,11 @@
 #pragma once
 #pragma once
 
-#include "types/types.h"
-#include "../board/types/bitboard.h"
-#include "../board/types/piece.h"
-#include "../../tests/lib/doctests.h"
-#include "../board/constants/zobrist_constants.h"
-#include "iostream"
+#include "../types/types.h"
+#include "../../board/types/bitboard.h"
+#include "../../board/types/piece.h"
+#include "../../../tests/lib/doctests.h"
+#include "../../board/constants/zobrist_constants.h"
 
 namespace tables {
 	namespace {

@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "stack"
-#include "string"
+#include <string>
 
 using u8 = std::uint8_t;
 using u16 = std::uint16_t;
@@ -18,7 +17,5 @@ using f64 = double;
 
 using usize = std::size_t;
 
-using string = std::string;
-
-template<class T, usize C>
-using array = std::array<T, C>;
+using std::string;
+using std::array;
