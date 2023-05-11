@@ -19,7 +19,7 @@ struct AttackData {
 };
 
 class AttackTables {
-public:
+private:
 
 	static constexpr Bitboard FILLED_BOARD = 0XFFFFFFFFFFFFFFFF;
 
