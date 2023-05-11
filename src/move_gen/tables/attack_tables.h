@@ -190,7 +190,7 @@ namespace tables {
 		constexpr array<Bitboard, NSQUARES> rook_attack_masks = generate_rook_attack_masks();
 		constexpr array<Bitboard, NSQUARES> bishop_attack_masks = generate_bishop_attack_masks();
 
-		[[nodiscard]] constexpr Bitboard generate_slow_sliding_attacks(Square sq, Direction direction, Bitboard occupancy) {
+		[[nodiscard]] consteval Bitboard generate_slow_sliding_attacks(Square sq, Direction direction, Bitboard occupancy) {
 			Bitboard attacks{};
 
 			Bitboard blockers = board_edge(direction);
@@ -208,14 +208,14 @@ namespace tables {
 			return attacks;
 		}
 
-		[[nodiscard]] constexpr Bitboard generate_slow_rook_attacks(Square sq, Bitboard occupancy) {
+		[[nodiscard]] consteval Bitboard generate_slow_rook_attacks(Square sq, Bitboard occupancy) {
 			return generate_slow_sliding_attacks(sq, NORTH, occupancy) |
 				   generate_slow_sliding_attacks(sq, SOUTH, occupancy) |
 				   generate_slow_sliding_attacks(sq, EAST, occupancy) |
 				   generate_slow_sliding_attacks(sq, WEST, occupancy);
 		}
 
-		[[nodiscard]] constexpr Bitboard generate_slow_bishop_attacks(Square sq, Bitboard occupancy) {
+		[[nodiscard]] consteval Bitboard generate_slow_bishop_attacks(Square sq, Bitboard occupancy) {
 			return generate_slow_sliding_attacks(sq, NORTH_EAST, occupancy) |
 				   generate_slow_sliding_attacks(sq, NORTH_WEST, occupancy) |
 				   generate_slow_sliding_attacks(sq, SOUTH_EAST, occupancy) |
@@ -223,7 +223,7 @@ namespace tables {
 		}
 
 
-		[[nodiscard]] constexpr array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> generate_rook_attack_table() {
+		[[nodiscard]] consteval array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> generate_rook_attack_table() {
 			array<array<Bitboard, ROOK_TABLE_SIZE>, NSQUARES> rook_attack_table{};
 			Bitboard subset{}, index{};
 
@@ -240,7 +240,7 @@ namespace tables {
 			return rook_attack_table;
 		}
 
-		[[nodiscard]] constexpr array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> generate_bishop_attack_table() {
+		[[nodiscard]] consteval array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> generate_bishop_attack_table() {
 			array<array<Bitboard, BISHOP_TABLE_SIZE>, NSQUARES> bishop_attack_table{};
 			Bitboard subset{}, index{};
 
