@@ -7,9 +7,9 @@
 #include "../types.h"
 #include "types/bitboard.h"
 #include "constants/misc_constants.h"
-#include "types/move.h"
-#include "utils/stack.h"
+#include "../move_gen/types/move.h"
 #include "types/board_types.h"
+#include "../utils/stack.h"
 
 class Position;
 
@@ -67,11 +67,36 @@ public:
 	Position() = default;
 	explicit Position(const std::string& fen);
 
-	[[nodiscard]] inline Piece piece_at(Square square) const { return board[square]; }
-
 	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
 	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }
 	[[nodiscard]] inline ZobristHash hash() const { return state_history.peek().hash; }
+
+	[[nodiscard]] inline Piece piece_at(Square square) const { return board[square]; }
+
+	template<Color color, PieceType piece_type>
+	[[nodiscard]] consteval Bitboard occupancy() const { return pieces[make_piece<color, piece_type>()]; }
+
+	template<Piece piece>
+	[[nodiscard]] consteval Bitboard occupancy() const { return pieces[piece]; }
+
+	template<Color color>
+	[[nodiscard]] consteval Bitboard occupancy() const {
+		return 	pieces[make_piece<color, PAWN>()] |
+				pieces[make_piece<color, KNIGHT>()] |
+				pieces[make_piece<color, BISHOP>()] |
+				pieces[make_piece<color, ROOK>()] |
+				pieces[make_piece<color, QUEEN>()];
+	}
+
+	template<Color color>
+	[[nodiscard]] consteval Bitboard diagonal_sliders() const {
+		return occupancy<color, BISHOP>() | occupancy<color, QUEEN>();
+	}
+
+	template<Color color>
+	[[nodiscard]] consteval Bitboard orthogonal_sliders() const {
+		return occupancy<color, ROOK>() | occupancy<color, QUEEN>();
+	}
 
 	void set_fen(const std::string& fen);
 	[[nodiscard]] std::string fen() const;

@@ -6,10 +6,10 @@
 #include <iostream>
 #include <sstream>
 #include "position.h"
-#include "utils/helpers.h"
 #include "types/bitboard.h"
 #include "constants/misc_constants.h"
 #include "constants/zobrist_constants.h"
+#include "../utils/helpers.h"
 
 Position::Position(const std::string& fen) {
 	set_fen(fen);

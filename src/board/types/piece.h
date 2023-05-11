@@ -31,12 +31,12 @@ enum Piece : u32 {
 };
 
 template<Color color, PieceType piece_type>
-Piece make_piece() {
+consteval Piece make_piece() {
 	return static_cast<Piece>((color << 3) | piece_type);
 }
 
 template<Piece piece>
-PieceType type_of() {
+consteval PieceType type_of() {
 	return static_cast<PieceType>(piece & 0b000111);
 }
 

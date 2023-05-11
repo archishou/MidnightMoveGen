@@ -1,7 +1,8 @@
 #pragma once
 #include <cstdint>
 #include "../../types.h"
-#include "board_types.h"
+#include "../../board/types/board_types.h"
+#include "../../board/types/square.h"
 
 using MoveType = u8;
 
@@ -64,9 +65,9 @@ public:
 
 constexpr Move EMPTY_MOVE = Move();
 
-constexpr std::array MOVE_TYPE_UCI = {
-		"", "", "", "", "N", "B", "R", "Q", "", "", "", "",
-		"N", "B", "R", "Q"
+inline const array<string, 16> MOVE_TYPE_UCI = {
+		"", "", "", "", "N", "B", "R", "Q",
+		"", "", "", "", "N", "B", "R", "Q"
 };
 
 constexpr std::ostream& operator<<(std::ostream& os, const Move& m) {

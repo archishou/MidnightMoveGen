@@ -22,7 +22,7 @@ enum Direction : i32 {
 };
 
 template<Color C, Direction D>
-constexpr Direction relative_dir() {
+consteval Direction relative_dir() {
 	if constexpr (C == WHITE) return D;
 	return Direction(-D);
 }
@@ -50,43 +50,6 @@ constexpr Rank RANK5 = 4;
 constexpr Rank RANK6 = 5;
 constexpr Rank RANK7 = 6;
 constexpr Rank RANK8 = 7;
-
-constexpr i32 NSQUARES = 64;
-enum Square : i32 {
-	a1, b1, c1, d1, e1, f1, g1, h1,
-	a2, b2, c2, d2, e2, f2, g2, h2,
-	a3, b3, c3, d3, e3, f3, g3, h3,
-	a4, b4, c4, d4, e4, f4, g4, h4,
-	a5, b5, c5, d5, e5, f5, g5, h5,
-	a6, b6, c6, d6, e6, f6, g6, h6,
-	a7, b7, c7, d7, e7, f7, g7, h7,
-	a8, b8, c8, d8, e8, f8, g8, h8,
-	NO_SQUARE
-};
-
-inline Square operator++(Square& orig, int) {
-	Square r_val = orig;
-	orig = static_cast<Square>(orig + 1);
-	return r_val;
-}
-constexpr Square operator +(Square s, Direction d) { return Square(static_cast<i32>(s) + static_cast<i32>(d)); }
-constexpr Square operator -(Square s, Direction d) { return Square(static_cast<i32>(s) - static_cast<i32>(d)); }
-inline Square& operator +=(Square& s, Direction d) { return s = s + d; }
-inline Square& operator +=(Square& s, i32 i) { return s = static_cast<Square>(s + i); }
-inline Square& operator -=(Square& s, Direction d) { return s = s - d; }
-inline Square flip(Square s) { return static_cast<Square>(s ^ 0b111000); }
-
-const std::string SQ_TO_STRING[NSQUARES + 1] = {
-		"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
-		"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
-		"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
-		"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-		"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
-		"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
-		"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
-		"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
-		"None"
-};
 
 constexpr i32 NCASTLING_RIGHTS = 4;
 using CastleRight = i32;
