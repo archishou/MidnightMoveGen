@@ -10,6 +10,7 @@
 #include "../move_gen/types/move.h"
 #include "types/board_types.h"
 #include "../utils/stack.h"
+#include "../move_gen/tables/attack_tables.h"
 
 class Position;
 
@@ -70,17 +71,30 @@ public:
 	[[nodiscard]] inline u16 fifty_move_rule() const { return state_history.peek().fifty_move_rule; }
 	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }
 	[[nodiscard]] inline ZobristHash hash() const { return state_history.peek().hash; }
+	[[nodiscard]] inline Bitboard from_to() const { return state_history.peek().from_to; }
+
+	template<Color color>
+	[[nodiscard]] inline bool king_and_oo_rook_not_moved() const {
+		if constexpr (color == WHITE) return !(from_to() & PositionState::WHITE_OO_MASK);
+		return !(from_to() & PositionState::BLACK_OO_MASK);
+	};
+
+	template<Color color>
+	[[nodiscard]] inline bool king_and_ooo_rook_not_moved() const {
+		if constexpr (color == WHITE) return !(from_to() & PositionState::WHITE_OOO_MASK);
+		return !(from_to() & PositionState::BLACK_OOO_MASK);
+	};
 
 	[[nodiscard]] inline Piece piece_at(Square square) const { return board[square]; }
 
 	template<Color color, PieceType piece_type>
-	[[nodiscard]] consteval Bitboard occupancy() const { return pieces[make_piece<color, piece_type>()]; }
+	[[nodiscard]] constexpr Bitboard occupancy() const { return pieces[make_piece<color, piece_type>()]; }
 
 	template<Piece piece>
-	[[nodiscard]] consteval Bitboard occupancy() const { return pieces[piece]; }
+	[[nodiscard]] constexpr Bitboard occupancy() const { return pieces[piece]; }
 
 	template<Color color>
-	[[nodiscard]] consteval Bitboard occupancy() const {
+	[[nodiscard]] constexpr Bitboard occupancy() const {
 		return 	pieces[make_piece<color, PAWN>()] |
 				pieces[make_piece<color, KNIGHT>()] |
 				pieces[make_piece<color, BISHOP>()] |
@@ -97,6 +111,19 @@ public:
 	[[nodiscard]] consteval Bitboard orthogonal_sliders() const {
 		return occupancy<color, ROOK>() | occupancy<color, QUEEN>();
 	}
+
+	template<Color color>
+	[[nodiscard]] constexpr Bitboard attackers_of(Square s, Bitboard occ) const {
+		return tables::attacks<PAWN, ~color>(s) & pieces[make_piece<color, PAWN>()] |
+				tables::attacks<KNIGHT>(s, occ) & pieces[make_piece<color, KNIGHT>()] |
+				tables::attacks<BISHOP>(s, occ) & (pieces[make_piece<color, BISHOP>()] | pieces[make_piece<color, QUEEN>()]) |
+				tables::attacks<ROOK>(s, occ) & (pieces[make_piece<color, ROOK>()] | pieces[make_piece<color, QUEEN>()]);
+	}
+
+	[[nodiscard]] constexpr Bitboard attackers_of(Square s, Bitboard occ) const {
+		return attackers_of<BLACK>(s, occ) | attackers_of<WHITE>(s, occ);
+	}
+
 
 	void set_fen(const std::string& fen);
 	[[nodiscard]] std::string fen() const;

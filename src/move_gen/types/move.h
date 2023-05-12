@@ -12,14 +12,15 @@ constexpr MoveType OOO			= 0b0010;
 constexpr MoveType DOUBLE_PUSH	= 0b0011;
 
 // Captures have the 4th bit set.
-constexpr MoveType CAPTURE		= 0b1000;
+constexpr MoveType CAPTURE_TYPE	= 0b1000;
 constexpr MoveType ENPASSANT	= 0b1001;
 
 // Promotions have the 3rd bit set.
-constexpr MoveType PR_KNIGHT	= 0b0100;
-constexpr MoveType PR_BISHOP	= 0b0101;
-constexpr MoveType PR_ROOK		= 0b0110;
-constexpr MoveType PR_QUEEN		= 0b0111;
+constexpr MoveType PROMOTION_TYPE 	= 0b0100;
+constexpr MoveType PR_KNIGHT		= 0b0100;
+constexpr MoveType PR_BISHOP		= 0b0101;
+constexpr MoveType PR_ROOK			= 0b0110;
+constexpr MoveType PR_QUEEN			= 0b0111;
 
 class Move {
 private:

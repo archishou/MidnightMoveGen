@@ -237,7 +237,7 @@ TEST_CASE("promotions") {
 		string start_fen = "rnbq2nr/1ppppPpp/k2b4/2p5/8/8/PPPPP1PP/RNBQKBNR w KQ - 0 1";
 		p.set_fen(start_fen);
 
-		Move m1 = Move(f7, g8, PR_QUEEN | CAPTURE);
+		Move m1 = Move(f7, g8, PR_QUEEN | CAPTURE_TYPE);
 		string m1_fen = "rnbq2Qr/1pppp1pp/k2b4/2p5/8/8/PPPPP1PP/RNBQKBNR b KQ - 0 1";
 
 		p.play<WHITE>(m1);
@@ -263,7 +263,7 @@ TEST_CASE("promotions") {
 		string start_fen = "rnbqkbnr/ppppp1pp/8/8/8/2KBP3/PPPPPpPP/RNBQ2NR b kq - 0 1";
 		p.set_fen(start_fen);
 
-		Move m1 = Move(f2, g1, PR_QUEEN | CAPTURE);
+		Move m1 = Move(f2, g1, PR_QUEEN | CAPTURE_TYPE);
 		string m1_fen = "rnbqkbnr/ppppp1pp/8/8/8/2KBP3/PPPPP1PP/RNBQ2qR w kq - 0 1";
 
 		p.play<BLACK>(m1);

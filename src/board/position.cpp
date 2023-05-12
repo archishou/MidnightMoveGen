@@ -197,19 +197,19 @@ void Position::play(Move move) {
 			remove_piece<ENABLE_HASH_UPDATE>(move.to() + relative_dir<color, SOUTH>());
 			state_history.top().captured = make_piece<~color, PAWN>();
 			break;
-		case PR_KNIGHT | CAPTURE:
+		case PR_KNIGHT | CAPTURE_TYPE:
 		case PR_KNIGHT:
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, KNIGHT>(), move.to());
 			break;
-		case PR_BISHOP | CAPTURE:
+		case PR_BISHOP | CAPTURE_TYPE:
 		case PR_BISHOP:
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, BISHOP>(), move.to());
 			break;
-		case PR_ROOK | CAPTURE:
+		case PR_ROOK | CAPTURE_TYPE:
 		case PR_ROOK:
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, ROOK>(), move.to());
 			break;
-		case PR_QUEEN | CAPTURE:
+		case PR_QUEEN | CAPTURE_TYPE:
 		case PR_QUEEN:
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, QUEEN>(), move.to());
 			break;
@@ -239,13 +239,13 @@ void Position::undo(Move move) {
 			remove_piece<DISABLE_HASH_UPDATE>(move.to());
 			place_piece<DISABLE_HASH_UPDATE>(make_piece<~color, PAWN>(), move.to() + relative_dir<color, SOUTH>());
 			break;
-		case PR_KNIGHT | CAPTURE:
+		case PR_KNIGHT | CAPTURE_TYPE:
 		case PR_KNIGHT:
-		case PR_BISHOP | CAPTURE:
+		case PR_BISHOP | CAPTURE_TYPE:
 		case PR_BISHOP:
-		case PR_ROOK | CAPTURE:
+		case PR_ROOK | CAPTURE_TYPE:
 		case PR_ROOK:
-		case PR_QUEEN | CAPTURE:
+		case PR_QUEEN | CAPTURE_TYPE:
 		case PR_QUEEN:
 			place_piece<DISABLE_HASH_UPDATE>(make_piece<color, PAWN>(), move.from());
 			break;
