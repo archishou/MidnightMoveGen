@@ -287,6 +287,16 @@ namespace tables {
 		return 0;
 	}
 
+	Bitboard attacks(PieceType piece_type, Square sq, Bitboard occupancy) {
+		if (piece_type == PAWN) return 0;
+		else if (piece_type == KNIGHT) return KNIGHT_ATTACKS[sq];
+		else if (piece_type == BISHOP) return get_bishop_attacks(sq, occupancy);
+		else if (piece_type == ROOK) return get_rook_attacks(sq, occupancy);
+		else if (piece_type == QUEEN) return get_bishop_attacks(sq, occupancy) | get_rook_attacks(sq, occupancy);
+		else if (piece_type == KING) return KING_ATTACKS[sq];
+		return 0;
+	}
+
 	TEST_SUITE_BEGIN("table-helpers");
 
 	TEST_CASE("generate-sliding-attacks") {

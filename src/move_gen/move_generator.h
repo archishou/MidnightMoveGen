@@ -64,6 +64,7 @@ private:
 	constexpr bool push_pawn_knight_check_captures(const SharedData& data, Bitboard checker, Bitboard not_pinned);
 	constexpr void push_en_passant(const SharedData& data, Bitboard pinned);
 	constexpr void push_castle(const SharedData& data, Bitboard danger);
+	constexpr void push_pinned(const SharedData& data, Bitboard pinned, Bitboard quiet_mask, Bitboard capture_mask);
 public:
 	explicit MoveList(Position& board);
 
@@ -72,6 +73,43 @@ public:
 	[[nodiscard]] inline auto size() const { return move_list.size(); }
 
 };
+
+template<Color color, MoveGenerationType move_gen_type>
+constexpr void MoveList<color, move_gen_type>::push_pinned(const MoveList::SharedData &data, Bitboard pinned, Bitboard quiet_mask, Bitboard capture_mask) {
+	Bitboard pinned_pieces = pinned & ~bitboard_of<color, KNIGHT>() & ~board.occupancy<color, PAWN>();
+	Bitboard pinned_pawns = pinned & board.occupancy<color, PAWN>();
+
+	while (pinned_pieces) {
+		const Square s = pop_lsb(pinned_pieces);
+		Bitboard pinned_to = tables::attacks(type_of(board.piece_at(s)), s, data.all) & tables::line_of(data.us_king_square, s);
+
+		if constexpr (move_gen_type == ALL) push<QUIET>(s, pinned_to & quiet_mask);
+		push<CAPTURE_TYPE>(s, pinned_to & capture_mask);
+	}
+
+	while (pinned_pawns) {
+		const Square s = pop_lsb(pinned_pawns);
+		const Bitboard line_of_s_king = tables::line_of(data.us_king_square, s);
+
+		if (rank_of(s) == relative_rank<color>(RANK7)) {
+			Bitboard pinned_pawn_to = tables::attacks<PAWN, color>(s) & capture_mask & line_of_s_king;
+			push<PROMOTION_TYPE | CAPTURE_TYPE>(s, pinned_pawn_to);
+			continue;
+		}
+		Bitboard pinned_pawn_to = tables::attacks<PAWN, color>(s) & data.them_occupancy & line_of_s_king;
+		push<CAPTURE_TYPE>(s, pinned_pawn_to);
+
+		if constexpr (move_gen_type == CAPTURES) continue;
+
+		pinned_pawn_to = shift_relative<color, NORTH>(square_to_bitboard(s)) & ~data.all & line_of_s_king;
+
+		Bitboard double_push_to = pinned_pawn_to & MASK_RANK[relative_rank<color>(RANK3)];
+
+		Bitboard pinned_pawn_double_push = shift_relative<color, NORTH>(double_push_to) & ~data.all & line_of_s_king;
+		push<QUIET>(s, pinned_pawn_to);
+		push<DOUBLE_PUSH>(s, pinned_pawn_double_push);
+	}
+}
 
 template<Color color, MoveGenerationType move_gen_type>
 constexpr void MoveList<color, move_gen_type>::push_castle(const MoveList::SharedData &data, Bitboard danger) {
