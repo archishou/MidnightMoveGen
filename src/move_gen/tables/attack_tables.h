@@ -274,7 +274,7 @@ namespace tables {
 	} // anon namespace
 
 	template<PieceType piece_type, Color color = WHITE>
-	Bitboard attacks(Square sq, Bitboard occupancy = 0) {
+	constexpr Bitboard attacks(Square sq, Bitboard occupancy = 0) {
 		if constexpr (piece_type == PAWN) {
 			if constexpr (color == WHITE) return WHITE_PAWN_ATTACKS[sq];
 			return BLACK_PAWN_ATTACKS[sq];
@@ -287,7 +287,7 @@ namespace tables {
 		return 0;
 	}
 
-	Bitboard attacks(PieceType piece_type, Square sq, Bitboard occupancy) {
+	inline Bitboard attacks(PieceType piece_type, Square sq, Bitboard occupancy) {
 		if (piece_type == PAWN) return 0;
 		else if (piece_type == KNIGHT) return KNIGHT_ATTACKS[sq];
 		else if (piece_type == BISHOP) return get_bishop_attacks(sq, occupancy);
@@ -312,7 +312,7 @@ namespace tables {
 		CHECK_EQ(generate_slow_sliding_attacks(e4, SOUTH_WEST, 0), 0x80402);
 	}
 
-	TEST_CASE("empty-board-attacks") {
+	TEST_CASE("empty-board_-attacks") {
 		CHECK_EQ(empty_board_rook_attacks(f3), 0x2020202020df2020);
 		CHECK_EQ(empty_board_rook_attacks(f5), 0x202020df20202020);
 

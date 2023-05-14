@@ -103,21 +103,21 @@ public:
 	}
 
 	template<Color color>
-	[[nodiscard]] consteval Bitboard diagonal_sliders() const {
+	[[nodiscard]] constexpr Bitboard diagonal_sliders() const {
 		return occupancy<color, BISHOP>() | occupancy<color, QUEEN>();
 	}
 
 	template<Color color>
-	[[nodiscard]] consteval Bitboard orthogonal_sliders() const {
+	[[nodiscard]] constexpr Bitboard orthogonal_sliders() const {
 		return occupancy<color, ROOK>() | occupancy<color, QUEEN>();
 	}
 
 	template<Color color>
 	[[nodiscard]] constexpr Bitboard attackers_of(Square s, Bitboard occ) const {
-		return tables::attacks<PAWN, ~color>(s) & pieces[make_piece<color, PAWN>()] |
-				tables::attacks<KNIGHT>(s, occ) & pieces[make_piece<color, KNIGHT>()] |
-				tables::attacks<BISHOP>(s, occ) & (pieces[make_piece<color, BISHOP>()] | pieces[make_piece<color, QUEEN>()]) |
-				tables::attacks<ROOK>(s, occ) & (pieces[make_piece<color, ROOK>()] | pieces[make_piece<color, QUEEN>()]);
+		return (tables::attacks<PAWN, ~color>(s) & pieces[make_piece<color, PAWN>()]) |
+				(tables::attacks<KNIGHT>(s, occ) & pieces[make_piece<color, KNIGHT>()]) |
+				(tables::attacks<BISHOP>(s, occ) & (pieces[make_piece<color, BISHOP>()] | pieces[make_piece<color, QUEEN>()])) |
+				(tables::attacks<ROOK>(s, occ) & (pieces[make_piece<color, ROOK>()] | pieces[make_piece<color, QUEEN>()]));
 	}
 
 	[[nodiscard]] constexpr Bitboard attackers_of(Square s, Bitboard occ) const {

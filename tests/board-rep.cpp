@@ -2,7 +2,7 @@
 #include "lib/doctests.h"
 #include "../src/board/position.h"
 
-TEST_SUITE_BEGIN("board-rep");
+TEST_SUITE_BEGIN("board_-rep");
 constexpr ZobristHash START_POS_HASH = 0x2278897016d03aa6;
 
 TEST_CASE("play-undo-white-ep") {

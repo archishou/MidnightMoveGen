@@ -51,6 +51,11 @@ constexpr Rank RANK6 = 5;
 constexpr Rank RANK7 = 6;
 constexpr Rank RANK8 = 7;
 
+template<Color C>
+constexpr Rank relative_rank(Rank r) {
+	return C == WHITE ? r : Rank(RANK8 - r);
+}
+
 constexpr i32 NCASTLING_RIGHTS = 4;
 using CastleRight = i32;
 
