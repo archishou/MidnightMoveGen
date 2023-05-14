@@ -40,31 +40,43 @@ private:
 	template<MoveType move_type>
 	void push(Square from, Bitboard to) {
 		while (to) {
+			Square to_square = pop_lsb(to);
 			if constexpr (move_type & PROMOTION_TYPE) {
-				Square to_square = pop_lsb(to);
 				constexpr MoveType is_capture = move_type & CAPTURE_TYPE;
 				move_list.push(Move(from, to_square, PR_KNIGHT | is_capture));
 				move_list.push(Move(from, to_square, PR_BISHOP | is_capture));
 				move_list.push(Move(from, to_square, PR_ROOK | is_capture));
 				move_list.push(Move(from, to_square, PR_QUEEN | is_capture));
 			} else {
-				move_list.push(Move(from, pop_lsb(to), move_type));
+				move_list.push(Move(from, to_square, move_type));
 			}
 		}
 	}
 
 	template<MoveType move_type>
 	void push_single(Square from, Square to) {
-		move_list.push(Move(from, to, move_type));
+		if constexpr (move_type & PROMOTION_TYPE) {
+			constexpr MoveType is_capture = move_type & CAPTURE_TYPE;
+			move_list.push(Move(from, to, PR_KNIGHT | is_capture));
+			move_list.push(Move(from, to, PR_BISHOP | is_capture));
+			move_list.push(Move(from, to, PR_ROOK | is_capture));
+			move_list.push(Move(from, to, PR_QUEEN | is_capture));
+		} else {
+			move_list.push(Move(from, to, move_type));
+		}
 	}
 
 	constexpr Bitboard generate_danger(const SharedData& data);
 	constexpr std::pair<Bitboard, Bitboard> generate_checkers_and_pinned(const SharedData& data);
 
-	constexpr bool push_pawn_knight_check_captures(const SharedData& data, Bitboard checker, Bitboard not_pinned);
+	constexpr void push_check_evasions(const SharedData& data, Bitboard danger);
+	constexpr bool push_pawn_knight_check_captures(const SharedData& data, Bitboard checker, Bitboard pinned);
 	constexpr void push_en_passant(const SharedData& data, Bitboard pinned);
 	constexpr void push_castle(const SharedData& data, Bitboard danger);
 	constexpr void push_pinned(const SharedData& data, Bitboard pinned, Bitboard quiet_mask, Bitboard capture_mask);
+	constexpr void push_non_pinned_pieces(const SharedData& data, Bitboard pinned, Bitboard quiet_mask, Bitboard capture_mask);
+	constexpr void push_non_pinned_pawns(const SharedData& data, Bitboard pinned, Bitboard quiet_mask, Bitboard capture_mask);
+	constexpr void push_promotions(const SharedData& data, Bitboard pinned, Bitboard quiet_mask, Bitboard capture_mask);
 public:
 	explicit MoveList(Position& board);
 
@@ -75,7 +87,87 @@ public:
 };
 
 template<Color color, MoveGenerationType move_gen_type>
-constexpr void MoveList<color, move_gen_type>::push_pinned(const MoveList::SharedData &data, Bitboard pinned, Bitboard quiet_mask, Bitboard capture_mask) {
+constexpr void MoveList<color, move_gen_type>::push_promotions(const MoveList::SharedData &data, Bitboard pinned, Bitboard quiet_mask,
+															   Bitboard capture_mask) {
+	Bitboard promotion_candidates = board.occupancy<color, PAWN>() & ~pinned & MASK_RANK[relative_rank<color>(RANK7)];
+	if (!promotion_candidates) return;
+
+	Bitboard west_promo_capture = shift_relative<color, NORTH_WEST>(promotion_candidates) & capture_mask;
+	Bitboard east_promo_capture = shift_relative<color, NORTH_EAST>(promotion_candidates) & capture_mask;
+
+	while (west_promo_capture) {
+		Square s = pop_lsb(west_promo_capture);
+		push_single<PROMOTION_TYPE | CAPTURE_TYPE>(s - relative_dir<color, NORTH_WEST>(), s);
+	}
+
+	while (east_promo_capture) {
+		Square s = pop_lsb(east_promo_capture);
+		push_single<PROMOTION_TYPE | CAPTURE_TYPE>(s - relative_dir<color, NORTH_EAST>(), s);
+	}
+
+	if constexpr (move_gen_type == CAPTURES) return;
+
+	Bitboard quiet_promos = shift_relative<color, NORTH>(promotion_candidates) & quiet_mask;
+	while (quiet_promos) {
+		Square s = pop_lsb(quiet_promos);
+		push_single<PROMOTION_TYPE>(s - relative_dir<color, NORTH>(), s);
+	}
+}
+
+template<Color color, MoveGenerationType move_gen_type>
+constexpr void MoveList<color, move_gen_type>::push_check_evasions(const MoveList::SharedData &data, Bitboard danger) {
+	Bitboard evasions = tables::attacks<KING>(data.us_king_square, data.all) & ~(data.us_occupancy | danger);
+	if constexpr (move_gen_type == ALL) push<QUIET>(data.us_king_square, evasions & ~data.them_occupancy);
+	push<CAPTURE_TYPE>(data.us_king_square, evasions & data.them_occupancy);
+}
+
+template<Color color, MoveGenerationType move_gen_type>
+constexpr std::pair<Bitboard, Bitboard>
+MoveList<color, move_gen_type>::generate_checkers_and_pinned(const MoveList::SharedData &data) {
+	Bitboard checkers{}, pinned{};
+
+	checkers = (tables::attacks<KNIGHT>(data.us_king_square, data.all) & board.occupancy<~color, KNIGHT>()) |
+			   (pawn_attacks<color>(data.us_king_square) & board.occupancy<~color, PAWN>());
+
+	Bitboard candidates = (tables::attacks<ROOK>(data.us_king_square, data.them_occupancy) & data.them_ortho_sliders) |
+						  (tables::attacks<BISHOP>(data.us_king_square, data.them_occupancy) & data.them_diag_sliders);
+
+	while (candidates) {
+		Square candidate_square = pop_lsb(candidates);
+		Bitboard potentially_pinned = tables::square_in_between(data.us_king_square, candidate_square) & data.us_occupancy;
+		if (potentially_pinned == 0) checkers ^= square_to_bitboard(candidate_square);
+		else if (pop_count(potentially_pinned) == 1) pinned ^= potentially_pinned;
+	}
+	return {checkers, pinned};
+}
+
+template<Color color, MoveGenerationType move_gen_type>
+constexpr Bitboard MoveList<color, move_gen_type>::generate_danger(const MoveList::SharedData& data) {
+	Bitboard danger;
+	danger = tables::attacks<PAWN, ~color>(board.occupancy<~color, PAWN>()) |
+			 tables::attacks<KING>(data.them_king_square, data.all);
+
+	Bitboard them_knights = bitboard_of<~color, KNIGHT>();
+	while (them_knights) {
+		danger |= tables::attacks<KNIGHT>(pop_lsb(them_knights), data.all);
+	}
+
+	Bitboard them_diag_sliders_ = data.them_diag_sliders;
+	while (them_diag_sliders_) {
+		danger |= tables::attacks<BISHOP>(pop_lsb(them_diag_sliders_), data.all ^ data.us_king);
+	}
+
+	Bitboard them_ortho_sliders_ = data.them_ortho_sliders;
+	while (them_ortho_sliders_) {
+		danger |= tables::attacks<ROOK>(pop_lsb(them_ortho_sliders_), data.all ^ data.us_king);
+	}
+
+	return danger;
+}
+
+template<Color color, MoveGenerationType move_gen_type>
+constexpr void MoveList<color, move_gen_type>::push_pinned(const MoveList::SharedData &data, Bitboard pinned,
+														   Bitboard quiet_mask, Bitboard capture_mask) {
 	Bitboard pinned_pieces = pinned & ~bitboard_of<color, KNIGHT>() & ~board.occupancy<color, PAWN>();
 	Bitboard pinned_pawns = pinned & board.occupancy<color, PAWN>();
 
@@ -157,7 +249,7 @@ constexpr void MoveList<color, move_gen_type>::push_en_passant(const MoveList::S
 }
 
 template<Color color, MoveGenerationType move_gen_type>
-constexpr bool MoveList<color, move_gen_type>::push_pawn_knight_check_captures(const MoveList::SharedData &data, Bitboard checker, Bitboard not_pinned) {
+constexpr bool MoveList<color, move_gen_type>::push_pawn_knight_check_captures(const MoveList::SharedData &data, Bitboard checker, Bitboard pinned) {
 	Square checker_square = lsb(checker);
 
 	Bitboard ep_checker_captures, attacking_checker;
@@ -169,7 +261,7 @@ constexpr bool MoveList<color, move_gen_type>::push_pawn_knight_check_captures(c
 			// The checker was a double pushed pawn
 			if (checker == shift_relative<color, SOUTH>(square_to_bitboard(epsq))) {
 				// We can ep capture the double pushed pawn as it is not pinned.
-				ep_checker_captures = tables::attacks<PAWN, ~color>(epsq) & board.occupancy<color, PAWN>() & not_pinned;
+				ep_checker_captures = tables::attacks<PAWN, ~color>(epsq) & board.occupancy<color, PAWN>() & ~pinned;
 				while (ep_checker_captures) {
 					push<ENPASSANT>(pop_lsb(ep_checker_captures), square_to_bitboard(epsq));
 				}
@@ -178,7 +270,7 @@ constexpr bool MoveList<color, move_gen_type>::push_pawn_knight_check_captures(c
 
 		case make_piece<~color, KNIGHT>():
 			// Checker was a pawn or knight, we must capture (evasions assumed to be handled already)
-			attacking_checker = board.attackers_of<~color>(checker_square, data.all) & not_pinned;
+			attacking_checker = board.attackers_of<~color>(checker_square, data.all) & ~pinned;
 			while (attacking_checker) {
 				Square s = pop_lsb(attacking_checker);
 				// If they promoted to a knight, and we can capture and promote, do that.
@@ -193,47 +285,70 @@ constexpr bool MoveList<color, move_gen_type>::push_pawn_knight_check_captures(c
 }
 
 template<Color color, MoveGenerationType move_gen_type>
-constexpr std::pair<Bitboard, Bitboard>
-MoveList<color, move_gen_type>::generate_checkers_and_pinned(const MoveList::SharedData &data) {
-	Bitboard checkers{}, pinned{};
-
-	checkers = (tables::attacks<KNIGHT>(data.us_king_square, data.all) & board.occupancy<~color, KNIGHT>()) |
-				(pawn_attacks<color>(data.us_king_square) & board.occupancy<~color, PAWN>());
-
-	Bitboard candidates = (tables::attacks<ROOK>(data.us_king_square, data.them_occupancy) & data.them_ortho_sliders) |
-							(tables::attacks<BISHOP>(data.us_king_square, data.them_occupancy) & data.them_diag_sliders);
-
-	while (candidates) {
-		Square candidate_square = pop_lsb(candidates);
-		Bitboard potentially_pinned = tables::square_in_between(data.us_king_square, candidate_square) & data.us_occupancy;
-		if (potentially_pinned == 0) checkers ^= square_to_bitboard(candidate_square);
-		else if (pop_count(potentially_pinned) == 1) pinned ^= potentially_pinned;
+constexpr void MoveList<color, move_gen_type>::push_non_pinned_pieces(const MoveList::SharedData &data, Bitboard pinned,
+																	  Bitboard quiet_mask, Bitboard capture_mask) {
+	Bitboard un_pinned_knights = board.occupancy<color, KNIGHT>() & ~pinned;
+	while (un_pinned_knights) {
+		Square s = pop_lsb(un_pinned_knights);
+		Bitboard knight_attacks = attacks<KNIGHT>(s, data.all);
+		if constexpr (move_gen_type == ALL) push<QUIET>(s, knight_attacks & quiet_mask);
+		push<CAPTURE_TYPE>(s, knight_attacks & capture_mask);
 	}
-	return {checkers, pinned};
+
+	Bitboard non_pinned_diag = data.us_diag_sliders & ~pinned;
+	while (non_pinned_diag) {
+		Square s = pop_lsb(non_pinned_diag);
+		Bitboard non_pinned_diag_attacks = attacks<BISHOP>(s, data.all);
+		if constexpr (move_gen_type == ALL) push<QUIET>(s, non_pinned_diag_attacks & quiet_mask);
+		push<CAPTURE_TYPE>(s, non_pinned_diag_attacks & capture_mask);
+	}
+
+	Bitboard non_pinned_ortho = data.us_ortho_sliders & ~pinned;
+	while (non_pinned_ortho) {
+		Square s = pop_lsb(non_pinned_ortho);
+		Bitboard non_pinned_ortho_attacks = attacks<ROOK>(s, data.all);
+		if constexpr (move_gen_type == ALL) push<QUIET>(s, non_pinned_ortho_attacks & quiet_mask);
+		push<CAPTURE_TYPE>(s, non_pinned_ortho_attacks & capture_mask);
+	}
 }
 
 template<Color color, MoveGenerationType move_gen_type>
-constexpr Bitboard MoveList<color, move_gen_type>::generate_danger(const MoveList::SharedData& data) {
-	Bitboard danger;
-	danger = tables::attacks<PAWN, ~color>(board.occupancy<~color, PAWN>()) |
-	        tables::attacks<KING>(data.them_king_square, data.all);
+constexpr void MoveList<color, move_gen_type>::push_non_pinned_pawns(const MoveList::SharedData &data, Bitboard pinned,
+																	 Bitboard quiet_mask, Bitboard capture_mask) {
 
-	Bitboard them_knights = bitboard_of<~color, KNIGHT>();
-	while (them_knights) {
-		danger |= tables::attacks<KNIGHT>(pop_lsb(them_knights), data.all);
+	Bitboard non_pinned_pawns = board.occupancy<color, PAWN>() & ~pinned & ~MASK_RANK[relative_rank<color>(RANK7)];
+
+	Bitboard left_pawn_captures = shift_relative<color, NORTH_WEST>(non_pinned_pawns) & capture_mask;
+	Bitboard right_pawn_captures = shift_relative<color, NORTH_EAST>(non_pinned_pawns) & capture_mask;
+
+	while (left_pawn_captures) {
+		Square s = pop_lsb(left_pawn_captures);
+		push_single<CAPTURE_TYPE>(s - relative_dir<color, NORTH_WEST>(), s);
 	}
 
-	Bitboard them_diag_sliders_ = data.them_diag_sliders;
-	while (them_diag_sliders_) {
-		danger |= tables::attacks<BISHOP>(pop_lsb(them_diag_sliders_), data.all ^ data.us_king);
+	while (right_pawn_captures) {
+		Square s = pop_lsb(right_pawn_captures);
+		push_single<CAPTURE_TYPE>(s - relative_dir<color, NORTH_EAST>(), s);
 	}
 
-	Bitboard them_ortho_sliders_ = data.them_ortho_sliders;
-	while (them_ortho_sliders_) {
-		danger |= tables::attacks<ROOK>(pop_lsb(them_ortho_sliders_), data.all ^ data.us_king);
+	if constexpr (move_gen_type == CAPTURES) return;
+
+	Bitboard single_pawn_pushes = shift_relative<color, NORTH>(non_pinned_pawns) & ~data.all;
+
+	Bitboard double_pawn_pushes = single_pawn_pushes & MASK_RANK[relative_rank<color>(RANK3)];
+	double_pawn_pushes = shift_relative<color, NORTH>(double_pawn_pushes) & quiet_mask;
+
+	single_pawn_pushes &= quiet_mask;
+
+	while (single_pawn_pushes) {
+		Square s = pop_lsb(single_pawn_pushes);
+		push_single<QUIET>(s - relative_dir<color, NORTH>(), s);
 	}
 
-	return danger;
+	while (double_pawn_pushes) {
+		Square s = pop_lsb(double_pawn_pushes);
+		push_single<DOUBLE_PUSH>(s - relative_dir<color, NORTH_NORTH>(), s);
+	}
 }
 
 template<Color color, MoveGenerationType move_gen_type>
@@ -244,22 +359,16 @@ MoveList<color, move_gen_type>::MoveList(Position &board) {
 
 	Bitboard danger = generate_danger(data);
 
-	// Push check evasions
-	const Square our_king = lsb(board.occupancy<color, KING>());
-	Bitboard evasions = tables::attacks<KING>(our_king, data.all) & ~(data.us_occupancy | danger);
-	if constexpr (move_gen_type == ALL) push<QUIET>(our_king, b1 & ~data.them_occupancy);
-	push<CAPTURE_TYPE>(our_king, evasions & data.them_occupancy);
+	push_check_evasions(data, danger);
 
 	Bitboard checkers{}, pinned{};
 	std::tie(checkers, pinned) = generate_checkers_and_pinned(data);
-
-	const Bitboard non_pinned = ~pinned;
 
 	Bitboard capture_mask, quiet_mask;
 	switch (pop_count(checkers)) {
 		case 2: return;
 		case 1:
-			if (push_pawn_knight_check_captures(data, checkers, non_pinned)) return;
+			if (push_pawn_knight_check_captures(data, checkers, pinned)) return;
 			capture_mask = checkers;
 			quiet_mask = tables::square_in_between(data.our_king, lsb(checkers));
 			break;
@@ -268,6 +377,10 @@ MoveList<color, move_gen_type>::MoveList(Position &board) {
 			quiet_mask = ~data.all;
 			push_en_passant(pinned);
 			push_castle(data, danger);
-
+			push_pinned(data, pinned, quiet_mask, capture_mask);
+			break;
 	}
+	push_non_pinned_pieces(data, pinned, quiet_mask, capture_mask);
+	push_non_pinned_pawns(data, pinned, quiet_mask, capture_mask);
+	push_promotions(data, pinned, quiet_mask, capture_mask);
 }
