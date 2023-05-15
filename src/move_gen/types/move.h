@@ -66,12 +66,12 @@ public:
 
 constexpr Move EMPTY_MOVE = Move();
 
-inline constexpr array<char, 16> MOVE_TYPE_UCI = {
-		0, 0, 0, 0, 'N', 'B', 'R', 'Q',
-		0, 0, 0, 0, 'N', 'B', 'R', 'Q'
+inline array<string , 16> MOVE_TYPE_UCI = {
+		"", "", "", "", "N", "B", "R", "Q",
+		"", "", "", "", "N", "B", "R", "Q"
 };
 
-constexpr std::ostream& operator<<(std::ostream& os, const Move& m) {
+inline std::ostream& operator<<(std::ostream& os, const Move& m) {
 	os << SQ_TO_STRING[m.from()] << SQ_TO_STRING[m.to()] << MOVE_TYPE_UCI[m.type()];
 	return os;
 }
