@@ -6,7 +6,7 @@
 #include "../src/utils/helpers.h"
 
 template<Color Us>
-u64 perft_node_count(Position& p, unsigned int depth) {
+u64 perft_node_count(Position& p, i32 depth) {
 	u64 nodes = 0;
 
 	MoveList<Us, ALL> list(p);
@@ -19,7 +19,7 @@ u64 perft_node_count(Position& p, unsigned int depth) {
 	return nodes;
 }
 
-u64 test_perft_node_count(const std::string& fen, int depth) {
+u64 test_perft_node_count(const std::string& fen, i32 depth) {
 	Position p(fen);
 	if (p.side == WHITE) {
 		return perft_node_count<WHITE>(p, depth);
@@ -80,8 +80,8 @@ TEST_CASE("perft-all-bulk") {
 		for (usize i = 1; i < split_perft.size(); i++) {
 			std::string expected = split_perft[i];
 
-			int depth = static_cast<i32>(i);
-			int expected_node_count = std::stoi(split(expected, " ")[2]);
+			i32 depth = static_cast<i32>(i);
+			i32 expected_node_count = std::stoi(split(expected, " ")[2]);
 
 			CHECK_EQ(test_perft_node_count(fen, depth), expected_node_count);
 
