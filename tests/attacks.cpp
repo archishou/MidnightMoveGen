@@ -33,7 +33,7 @@ TEST_CASE("attacks-10000") {
 		CHECK_EQ(tables::attacks<ROOK>(square, occupancy), expected_rook_attacks);
 		CHECK_EQ(tables::attacks<QUEEN>(square, occupancy), expected_queen_attacks);
 		CHECK_EQ(tables::attacks<KING>(square, occupancy), expected_king_attacks);
-}
+	}
 }
 
 TEST_SUITE_END();
