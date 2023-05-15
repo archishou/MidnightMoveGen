@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include "array"
+#include <array>
 
 using u8 = std::uint8_t;
 using u16 = std::uint16_t;
