@@ -41,7 +41,7 @@ unsigned long long split_perft(Position& p, unsigned int depth) {
 }
 
 TEST_CASE("startpos-perft") {
-	Position board{START_FEN};
+	Position board{"rnb1kbnr/ppq1pppp/p7/3pP3/8/6K1/PPPP1PPP/RNBQ1BNR w - d6 0 1"};
 
 	/*
 	board.play<WHITE>(Move(a2, a4, DOUBLE_PUSH));
@@ -50,7 +50,7 @@ TEST_CASE("startpos-perft") {
 	board.play<BLACK>(Move(b7, b5, DOUBLE_PUSH));
 	*/
 
-	Bitboard total_moves = split_perft<WHITE>(board, 6);
+	Bitboard total_moves = split_perft<WHITE>(board, 1);
 	std::cout << "total moves: " << total_moves << std::endl;
 }
 

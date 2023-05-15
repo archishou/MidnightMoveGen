@@ -132,14 +132,12 @@ void Position::set_fen(const std::string& fen_string) {
 		else if (c == 'q') 	state_history.top().from_to &= ~PositionState::BLACK_OOO_MASK;
 	}
 
-	/*
 	if (en_passant.size() > 1) {
-		auto square = static_cast<Square>((8 - (en_passant[1] - '0')) * 8 + en_passant[0] - 'a');
-		ep_square = square;
+		auto s = create_square(File(en_passant[0] - 'a'), Rank(en_passant[1] - '1'));
+		state_history.top().ep_square = s;
 	} else {
-		ep_square = NO_SQUARE;
+		state_history.top().ep_square = NO_SQUARE;
 	}
-	*/
 }
 
 std::ostream& operator << (std::ostream& os, const Position& p) {
@@ -200,18 +198,22 @@ void Position::play(Move move) {
 			break;
 		case PR_KNIGHT | CAPTURE_TYPE:
 		case PR_KNIGHT:
+			remove_piece<ENABLE_HASH_UPDATE>(move.to());
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, KNIGHT>(), move.to());
 			break;
 		case PR_BISHOP | CAPTURE_TYPE:
 		case PR_BISHOP:
+			remove_piece<ENABLE_HASH_UPDATE>(move.to());
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, BISHOP>(), move.to());
 			break;
 		case PR_ROOK | CAPTURE_TYPE:
 		case PR_ROOK:
+			remove_piece<ENABLE_HASH_UPDATE>(move.to());
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, ROOK>(), move.to());
 			break;
 		case PR_QUEEN | CAPTURE_TYPE:
 		case PR_QUEEN:
+			remove_piece<ENABLE_HASH_UPDATE>(move.to());
 			place_piece<ENABLE_HASH_UPDATE>(make_piece<color, QUEEN>(), move.to());
 			break;
 		default: break;
@@ -248,6 +250,7 @@ void Position::undo(Move move) {
 		case PR_ROOK:
 		case PR_QUEEN | CAPTURE_TYPE:
 		case PR_QUEEN:
+			remove_piece<DISABLE_HASH_UPDATE>(move.from());
 			place_piece<DISABLE_HASH_UPDATE>(make_piece<color, PAWN>(), move.from());
 			break;
 		default: break;

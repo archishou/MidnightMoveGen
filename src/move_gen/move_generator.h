@@ -247,7 +247,7 @@ constexpr void MoveList<color, move_gen_type>::push_en_passant(const MoveList::S
 
 	const Bitboard diagonal_pinned_ep_attackers = ep_attackers & pinned & tables::line_of(board_.ep_square(), data.us_king_square);
 	if (diagonal_pinned_ep_attackers) {
-		push_single<ENPASSANT>(lsb(unpinned_ep_attackers), board_.ep_square());
+		push_single<ENPASSANT>(lsb(diagonal_pinned_ep_attackers), board_.ep_square());
 	}
 }
 

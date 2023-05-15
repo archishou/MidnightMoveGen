@@ -5,63 +5,6 @@
 TEST_SUITE_BEGIN("board-rep");
 constexpr ZobristHash START_POS_HASH = 0x2278897016d03aa6;
 
-TEST_CASE("play-undo-simple") {
-	Position p(START_FEN);
-	p.play<WHITE>(Move(b1, c3, QUIET));
-
-	int i = 0;
-	for (auto piece : p.pieces) {
-		std::cout << PIECE_MATCHER[i] << std::endl;
-		print_bitboard(piece);
-		i++;
-	}
-
-	std::cout << std::endl;
-
-	p.undo<WHITE>(Move(b1, c3, QUIET));
-
-	i = 0;
-	for (auto piece : p.pieces) {
-		std::cout << PIECE_MATCHER[i] << std::endl;
-		print_bitboard(piece);
-		i++;
-	}
-
-	std::cout << std::endl;
-
-}
-
-TEST_CASE("play-undo-capture") {
-	Position p(START_FEN);
-
-	Move m1 = Move(e2, e4, DOUBLE_PUSH);
-	Move m2 = Move(a7, a6, QUIET);
-	Move m3 = Move(f1, a6, CAPTURE_TYPE);
-	Move m4 = Move(b7, a6, CAPTURE_TYPE);
-
-	p.play<WHITE>(m1);
-	std::cout << "Pieces after move 1 " << std::endl;
-	for (auto p_ : p.pieces) print_bitboard(p_);
-
-	p.play<BLACK>(m2);
-	std::cout << "Pieces after move 2 " << std::endl;
-	for (auto p_ : p.pieces) print_bitboard(p_);
-
-	p.play<WHITE>(m3);
-	std::cout << "Pieces after move 3 " << std::endl;
-	for (auto p_ : p.pieces) print_bitboard(p_);
-
-	/*
-	p.play<BLACK>(m4);
-	std::cout << "Pieces after move 4 " << std::endl;
-	for (auto p_ : p.pieces) print_bitboard(p_);
-
-	p.undo<BLACK>(m4);
-	std::cout << "Pieces after undo move 4 " << std::endl;
-	for (auto p_ : p.pieces) print_bitboard(p_);
-	 */
-}
-
 TEST_CASE("play-undo-white-ep") {
 	Position p(START_FEN);
 

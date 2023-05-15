@@ -313,11 +313,11 @@ namespace tables {
 	}
 
 	TEST_CASE("empty-board_-attacks") {
-		CHECK_EQ(empty_board_rook_attacks(f3), 0x2020202020df2020);
-		CHECK_EQ(empty_board_rook_attacks(f5), 0x202020df20202020);
+		CHECK_EQ(empty_board_rook_attacks(f3), 0x2020202020df2020ULL);
+		CHECK_EQ(empty_board_rook_attacks(f5), 0x202020df20202020ULL);
 
-		CHECK_EQ(empty_board_bishop_attacks(f3), 0x102048850005088);
-		CHECK_EQ(empty_board_bishop_attacks(f5), 0x488500050880402);
+		CHECK_EQ(empty_board_bishop_attacks(f3), 0x102048850005088ULL);
+		CHECK_EQ(empty_board_bishop_attacks(f5), 0x488500050880402ULL);
 	}
 
 	TEST_SUITE_END();
