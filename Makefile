@@ -3,7 +3,7 @@ EXE           = midnight-move-gen
 SOURCES      := $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp)
 SOURCES      += $(wildcard tests/*.cpp)
 
-CXXFLAGS     := -O3 -Isrc -flto -std=c++20 -fconstexpr-steps=900000000 -march=native -Wall -Wextra -Wno-deprecated -pedantic -DNDEBUG
+CXXFLAGS     := -O3 -Isrc -flto -std=c++20 -march=native -Wall -Wextra -Wno-deprecated -pedantic -DNDEBUG
 LDFLAGS      :=
 
 CXX          := g++
@@ -13,10 +13,10 @@ SUFFIX       :=
 ifeq ($(OS), Windows_NT)
     DETECTED_OS := Windows
     SUFFIX   := .exe
-    CXXFLAGS += -static
+    CXXFLAGS += -static -fconstexpr-ops-limit=900000000
 else
     DETECTED_OS := $(shell uname -s)
-    CXXFLAGS += -pthread
+    CXXFLAGS += -pthread -fconstexpr-steps=900000000
 endif
 
 ifneq (,$(findstring clang,$(shell $(CXX) --version)))
