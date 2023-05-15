@@ -67,8 +67,7 @@ TEST_CASE("PerftTestPositionKnightCheck"){
 }
 
 TEST_CASE("perft-all") {
-	std::string perft_file_path = "/Users/archishmaan/Documents/CodeProjects/chess-engine/"
-								  "tests/move-gen-tests/perft_results.txt";
+	std::string perft_file_path = "./tests/perft_results.txt";
 	std::ifstream input_file(perft_file_path);
 	std::string input_line;
 
@@ -80,7 +79,7 @@ TEST_CASE("perft-all") {
 		std::string fen = split_perft[0];
 		for (usize i = 1; i < split_perft.size(); i++) {
 			std::string expected = split_perft[i];
-			int depth = i;
+			int depth = static_cast<i32>(i);
 			int expected_node_count = std::stoi(split(expected, " ")[2]);
 			//std::cout << "Running fen: " << fen << " depth " << depth << " expected node count " << expected_node_count << std::endl;
 					CHECK_EQ(test_perft_node_count(fen, depth), expected_node_count);
