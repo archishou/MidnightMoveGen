@@ -7,10 +7,10 @@
 
 template<Color Us>
 u64 perft_node_count(Position& p, unsigned int depth) {
-	unsigned long long nodes = 0;
+	u64 nodes = 0;
 
 	MoveList<Us, ALL> list(p);
-	if (depth == 1) return (unsigned long long) list.size();
+	if (depth == 1) return list.size();
 	for (Move move : list) {
 		p.play<Us>(move);
 		nodes += perft_node_count<~Us>(p, depth - 1);
@@ -66,22 +66,25 @@ TEST_CASE("PerftTestPositionKnightCheck"){
 	CHECK_EQ(test_perft_node_count("5n2/3KPk2/8/3p1N2/3P4/8/8/8 w - - 17 102", 8), 80433958);
 }
 
-TEST_CASE("perft-all") {
+TEST_CASE("perft-all-bulk") {
 	std::string perft_file_path = "./tests/perft_results.txt";
 	std::ifstream input_file(perft_file_path);
 	std::string input_line;
 
 	auto start_time = std::chrono::high_resolution_clock::now();
 
-	unsigned long long total_nodes = 0;
+	u64 total_nodes = 0;
 	while (std::getline(input_file, input_line)) {
 		std::vector<std::string> split_perft = split(input_line, ";");
 		std::string fen = split_perft[0];
 		for (usize i = 1; i < split_perft.size(); i++) {
 			std::string expected = split_perft[i];
+
 			int depth = static_cast<i32>(i);
 			int expected_node_count = std::stoi(split(expected, " ")[2]);
+
 			CHECK_EQ(test_perft_node_count(fen, depth), expected_node_count);
+
 			total_nodes += expected_node_count;
 		}
 	}
@@ -96,6 +99,5 @@ TEST_CASE("perft-all") {
 	std::cout << "NPS: " << (total_nodes * 1000) / elap << std::endl;
 	input_file.close();
 }
-
 
 TEST_SUITE_END();
