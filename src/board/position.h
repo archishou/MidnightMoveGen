@@ -99,7 +99,8 @@ public:
 				pieces[make_piece<color, KNIGHT>()] |
 				pieces[make_piece<color, BISHOP>()] |
 				pieces[make_piece<color, ROOK>()] |
-				pieces[make_piece<color, QUEEN>()];
+				pieces[make_piece<color, QUEEN>()] |
+				pieces[make_piece<color, KING>()];
 	}
 
 	template<Color color>
@@ -123,7 +124,6 @@ public:
 	[[nodiscard]] constexpr Bitboard attackers_of(Square s, Bitboard occ) const {
 		return attackers_of<BLACK>(s, occ) | attackers_of<WHITE>(s, occ);
 	}
-
 
 	void set_fen(const std::string& fen);
 	[[nodiscard]] std::string fen() const;

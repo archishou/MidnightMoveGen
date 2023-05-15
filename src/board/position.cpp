@@ -46,6 +46,7 @@ template<bool update_hash>
 void Position::move_piece(Square from, Square to) {
 	Piece piece = piece_at(from);
 	remove_piece<update_hash>(from);
+	remove_piece<update_hash>(to);
 	place_piece<update_hash>(piece, to);
 }
 
@@ -222,7 +223,7 @@ template<Color color>
 void Position::undo(Move move) {
 	PositionState old_state = state_history.pop();
 
-	place_piece<DISABLE_HASH_UPDATE>(piece_at(move.to()), move.from());
+	move_piece<DISABLE_HASH_UPDATE>(move.to(), move.from());
 	place_piece<DISABLE_HASH_UPDATE>(old_state.captured, move.to());
 
 	MoveType type = move.type();

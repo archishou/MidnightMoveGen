@@ -6,6 +6,7 @@
 #include "tables/attack_tables.h"
 #include "tables/square_tables.h"
 #include "move_gen_masks.h"
+#include "iostream"
 
 template<Color color, MoveGenerationType move_gen_type = ALL>
 class MoveList {
@@ -144,7 +145,7 @@ MoveList<color, move_gen_type>::generate_checkers_and_pinned(const MoveList::Sha
 template<Color color, MoveGenerationType move_gen_type>
 constexpr Bitboard MoveList<color, move_gen_type>::generate_danger(const MoveList::SharedData& data) {
 	Bitboard danger = board_.occupancy<~color, PAWN>();
-	danger = shift_relative<color, NORTH_WEST>(danger) | shift_relative<color, NORTH_EAST>(danger);
+	danger = shift_relative<~color, NORTH_WEST>(danger) | shift_relative<~color, NORTH_EAST>(danger);
 
 	danger |= tables::attacks<KING>(data.them_king_square, data.all);
 
@@ -238,7 +239,8 @@ constexpr void MoveList<color, move_gen_type>::push_en_passant(const MoveList::S
 		const Bitboard masked_all = data.all ^ square_to_bitboard(s) ^ ep_captured_pawn;
 		const Bitboard attacking_ortho_sliders = tables::attacks<ROOK>(data.us_king_square, masked_all);
 
-		if (attacking_ortho_sliders | MASK_RANK[rank_of(data.us_king_square)] | data.them_ortho_sliders != 0) continue;
+		const Bitboard pseudo_pinned_attackers = attacking_ortho_sliders & MASK_RANK[rank_of(data.us_king_square)] & data.them_ortho_sliders;
+		if (pseudo_pinned_attackers != 0) continue;
 
 		push_single<ENPASSANT>(s, board_.ep_square());
 	}
@@ -271,7 +273,7 @@ constexpr bool MoveList<color, move_gen_type>::push_pawn_knight_check_captures(c
 
 		case make_piece<~color, KNIGHT>():
 			// Checker was a pawn or knight, we must capture (evasions assumed to be handled already)
-			attacking_checker = board_.attackers_of<~color>(checker_square, data.all) & ~pinned;
+			attacking_checker = board_.attackers_of<color>(checker_square, data.all) & ~pinned;
 			while (attacking_checker) {
 				Square s = pop_lsb(attacking_checker);
 				// If they promoted to a knight, and we can capture and promote, do that.
@@ -300,6 +302,7 @@ constexpr void MoveList<color, move_gen_type>::push_non_pinned_pieces(const Move
 	while (non_pinned_diag) {
 		Square s = pop_lsb(non_pinned_diag);
 		Bitboard non_pinned_diag_attacks = tables::attacks<BISHOP>(s, data.all);
+
 		if constexpr (move_gen_type == ALL) push<QUIET>(s, non_pinned_diag_attacks & quiet_mask);
 		push<CAPTURE_TYPE>(s, non_pinned_diag_attacks & capture_mask);
 	}
@@ -308,6 +311,7 @@ constexpr void MoveList<color, move_gen_type>::push_non_pinned_pieces(const Move
 	while (non_pinned_ortho) {
 		Square s = pop_lsb(non_pinned_ortho);
 		Bitboard non_pinned_ortho_attacks = tables::attacks<ROOK>(s, data.all);
+
 		if constexpr (move_gen_type == ALL) push<QUIET>(s, non_pinned_ortho_attacks & quiet_mask);
 		push<CAPTURE_TYPE>(s, non_pinned_ortho_attacks & capture_mask);
 	}

@@ -9,9 +9,9 @@ template<Color Us>
 unsigned long long perft(Position& p, unsigned int depth) {
 	unsigned long long nodes = 0;
 
-	MoveList<Us, ALL> list(p);
-
 	if (depth == 0) return 1;
+
+	MoveList<Us, ALL> list(p);
 
 	for (Move move : list) {
 		p.play<Us>(move);
@@ -32,7 +32,7 @@ unsigned long long split_perft(Position& p, unsigned int depth) {
 		std::cout << move;
 		p.play<Us>(move);
 		pf = perft<~Us>(p, depth - 1);
-		std::cout << ": " << pf << " moves\n";
+		std::cout << ": " << pf << " moves " << p.fen() << std::endl;
 		nodes += pf;
 		p.undo<Us>(move);
 	}
@@ -42,7 +42,15 @@ unsigned long long split_perft(Position& p, unsigned int depth) {
 
 TEST_CASE("startpos-perft") {
 	Position board{START_FEN};
-	Bitboard total_moves = split_perft<WHITE>(board, 1);
+
+	/*
+	board.play<WHITE>(Move(a2, a4, DOUBLE_PUSH));
+	board.play<BLACK>(Move(b8, a6, QUIET));
+	board.play<WHITE>(Move(a4, a5, QUIET));
+	board.play<BLACK>(Move(b7, b5, DOUBLE_PUSH));
+	*/
+
+	Bitboard total_moves = split_perft<WHITE>(board, 6);
 	std::cout << "total moves: " << total_moves << std::endl;
 }
 
