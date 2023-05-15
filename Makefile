@@ -9,14 +9,20 @@ LDFLAGS      :=
 CXX          := g++
 SUFFIX       :=
 
+ifeq ($(OS), Darwin)
+	CXXFLAGS += -fconstexpr-steps=900000000
+else
+    CXXFLAGS += -fconstexpr-ops-limit=900000000
+endif
+
 # Detect Windows
 ifeq ($(OS), Windows_NT)
     DETECTED_OS := Windows
     SUFFIX   := .exe
-    CXXFLAGS += -static -fconstexpr-ops-limit=900000000
+    CXXFLAGS += -static
 else
     DETECTED_OS := $(shell uname -s)
-    CXXFLAGS += -pthread -fconstexpr-steps=900000000
+    CXXFLAGS += -pthread
 endif
 
 ifneq (,$(findstring clang,$(shell $(CXX) --version)))
