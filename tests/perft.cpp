@@ -4,6 +4,7 @@
 #include "iostream"
 #include "fstream"
 #include "../src/utils/helpers.h"
+#include <time.h>
 
 template<Color Us>
 u64 perft_node_count(Position& p, i32 depth) {
