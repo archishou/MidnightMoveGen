@@ -21,7 +21,7 @@ u64 perft_node_count(Position& p, i32 depth) {
 
 u64 test_perft_node_count(const std::string& fen, i32 depth) {
 	Position p(fen);
-	if (p.side == WHITE) {
+	if (p.turn() == WHITE) {
 		return perft_node_count<WHITE>(p, depth);
 	} else {
 		return perft_node_count<BLACK>(p, depth);

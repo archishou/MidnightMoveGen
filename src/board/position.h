@@ -37,8 +37,7 @@ public:
 };
 
 class Position {
-public:
-//private: commented out for debugging
+private:
 	Color side = WHITE;
 
 	std::array<Bitboard, NPIECES> pieces{};
@@ -64,7 +63,7 @@ public:
 
 	[[nodiscard]] u8 castling_state(Bitboard from_to) const;
 
-//public: commented out for debugging
+public:
 	Position() = default;
 	explicit Position(const std::string& fen);
 
@@ -72,6 +71,7 @@ public:
 	[[nodiscard]] inline Square ep_square() const { return state_history.peek().ep_square; }
 	[[nodiscard]] inline ZobristHash hash() const { return state_history.peek().hash; }
 	[[nodiscard]] inline Bitboard from_to() const { return state_history.peek().from_to; }
+	[[nodiscard]] inline Color turn() const { return side; }
 
 	template<Color color>
 	[[nodiscard]] inline bool king_and_oo_rook_not_moved() const {
