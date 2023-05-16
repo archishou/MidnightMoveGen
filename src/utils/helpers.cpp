@@ -5,9 +5,10 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include "../types.h"
 
 std::vector<std::string> split(const std::string& s, const std::string& delimiter) {
-	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+	usize pos_start = 0, pos_end, delim_len = delimiter.length();
 	std::string token;
 	std::vector<std::string> res;
 

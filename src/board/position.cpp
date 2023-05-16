@@ -51,20 +51,20 @@ void Position::move_piece(Square from, Square to) {
 }
 
 u8 Position::castling_state(Bitboard from_to) const {
-	int white_oo = !(from_to & PositionState::WHITE_OO_MASK) << 3;
-	int white_ooo = !(from_to & PositionState::WHITE_OOO_MASK) << 2;
-	int black_oo = !(from_to & PositionState::BLACK_OO_MASK) << 1;
-	int black_ooo = !(from_to & PositionState::BLACK_OOO_MASK);
+	i32 white_oo = !(from_to & PositionState::WHITE_OO_MASK) << 3;
+	i32 white_ooo = !(from_to & PositionState::WHITE_OOO_MASK) << 2;
+	i32 black_oo = !(from_to & PositionState::BLACK_OO_MASK) << 1;
+	i32 black_ooo = !(from_to & PositionState::BLACK_OOO_MASK);
 	return white_oo | white_ooo | black_oo | black_ooo;
 }
 
 std::string Position::fen() const {
 	std::ostringstream fen;
-	int empty;
+	i32 empty;
 
-	for (int i = 56; i >= 0; i -= 8) {
+	for (i32 i = 56; i >= 0; i -= 8) {
 		empty = 0;
-		for (int j = 0; j < 8; j++) {
+		for (i32 j = 0; j < 8; j++) {
 			Piece p = board[i + j];
 			if (p == NO_PIECE) empty++;
 			else {
@@ -144,9 +144,9 @@ std::ostream& operator << (std::ostream& os, const Position& p) {
 	const std::string s = "   +---+---+---+---+---+---+---+---+\n";
 	const std::string t = "     A   B   C   D   E   F   G   H\n";
 	os << t;
-	for (int i = 56; i >= 0; i -= 8) {
+	for (i32 i = 56; i >= 0; i -= 8) {
 		os << s << " " << i / 8 + 1 << " ";
-		for (int j = 0; j < 8; j++)
+		for (i32 j = 0; j < 8; j++)
 			os << "| " << PIECE_MATCHER[p.board[i + j]] << " ";
 		os << "| " << i / 8 + 1 << "\n";
 	}

@@ -17,7 +17,7 @@ enum Square : i32 {
 	NO_SQUARE
 };
 
-inline constexpr Square operator ++(Square& orig, int) {
+inline constexpr Square operator ++(Square& orig, i32) {
 	Square r_val = orig;
 	orig = static_cast<Square>(orig + 1);
 	return r_val;
@@ -55,11 +55,11 @@ constexpr File file_of(Square s) {
 	return File(s & 0b111);
 }
 
-constexpr int diagonal_of(Square s) {
+constexpr i32 diagonal_of(Square s) {
 	return 7 + rank_of(s) - file_of(s);
 }
 
-constexpr int anti_diagonal_of(Square s) {
+constexpr i32 anti_diagonal_of(Square s) {
 	return rank_of(s) + file_of(s);
 }
 
