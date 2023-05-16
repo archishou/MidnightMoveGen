@@ -103,6 +103,10 @@ public:
 				pieces[make_piece<color, KING>()];
 	}
 
+	[[nodiscard]] inline Bitboard occupancy() {
+		return occupancy<WHITE>() | occupancy<BLACK>();
+	}
+
 	template<Color color>
 	[[nodiscard]] constexpr Bitboard diagonal_sliders() const {
 		return occupancy<color, BISHOP>() | occupancy<color, QUEEN>();
