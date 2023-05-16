@@ -24,7 +24,9 @@ MoveList<WHITE, ALL> move_list(board);
 ```
 Building a move.
 ```
-// Supported types: QUIET, OO, OOO, DOUBLE_PUSH, CAPTURE_TYPE, ENPASSANT, PR_KNIGHT, PR_BISHOP, PR_ROOK, PR_QUEEN
+// Supported types: QUIET, OO, OOO, DOUBLE_PUSH, 
+// CAPTURE_TYPE, ENPASSANT, PR_KNIGHT, PR_BISHOP, 
+// PR_ROOK, PR_QUEEN
 Move move = Move(e2, e4, QUIET);
 
 // Promote and capture 
