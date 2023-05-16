@@ -77,13 +77,13 @@ public:
 	[[nodiscard]] inline bool king_and_oo_rook_not_moved() const {
 		if constexpr (color == WHITE) return !(from_to() & PositionState::WHITE_OO_BANNED_MASK);
 		return !(from_to() & PositionState::BLACK_OO_BANNED_MASK);
-	};
+	}
 
 	template<Color color>
 	[[nodiscard]] inline bool king_and_ooo_rook_not_moved() const {
 		if constexpr (color == WHITE) return !(from_to() & PositionState::WHITE_OOO_BANNED_MASK);
 		return !(from_to() & PositionState::BLACK_OOO_BANNED_MASK);
-	};
+	}
 
 	[[nodiscard]] inline Piece piece_at(Square square) const { return board[square]; }
 
