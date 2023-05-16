@@ -51,10 +51,10 @@ void Position::move_piece(Square from, Square to) {
 }
 
 u8 Position::castling_state(Bitboard from_to) const {
-	i32 white_oo = !(from_to & PositionState::WHITE_OO_MASK) << 3;
-	i32 white_ooo = !(from_to & PositionState::WHITE_OOO_MASK) << 2;
-	i32 black_oo = !(from_to & PositionState::BLACK_OO_MASK) << 1;
-	i32 black_ooo = !(from_to & PositionState::BLACK_OOO_MASK);
+	i32 white_oo = !(from_to & PositionState::WHITE_OO_BANNED_MASK) << 3;
+	i32 white_ooo = !(from_to & PositionState::WHITE_OOO_BANNED_MASK) << 2;
+	i32 black_oo = !(from_to & PositionState::BLACK_OO_BANNED_MASK) << 1;
+	i32 black_ooo = !(from_to & PositionState::BLACK_OOO_BANNED_MASK);
 	return white_oo | white_ooo | black_oo | black_ooo;
 }
 
@@ -126,10 +126,10 @@ void Position::set_fen(const std::string& fen_string) {
 
 	state_history.top().from_to = PositionState::NO_CASTLING_MASK;
 	for (char c : castling) {
-		if (c == 'K') 		state_history.top().from_to &= ~PositionState::WHITE_OO_MASK;
-		else if (c == 'Q') 	state_history.top().from_to &= ~PositionState::WHITE_OOO_MASK;
-		else if (c == 'k') 	state_history.top().from_to &= ~PositionState::BLACK_OO_MASK;
-		else if (c == 'q') 	state_history.top().from_to &= ~PositionState::BLACK_OOO_MASK;
+		if (c == 'K') 		state_history.top().from_to &= ~PositionState::WHITE_OO_BANNED_MASK;
+		else if (c == 'Q') 	state_history.top().from_to &= ~PositionState::WHITE_OOO_BANNED_MASK;
+		else if (c == 'k') 	state_history.top().from_to &= ~PositionState::BLACK_OO_BANNED_MASK;
+		else if (c == 'q') 	state_history.top().from_to &= ~PositionState::BLACK_OOO_BANNED_MASK;
 	}
 
 	if (en_passant.size() > 1) {
