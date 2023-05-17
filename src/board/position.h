@@ -138,4 +138,10 @@ public:
 
 	template<Color color>
 	void undo(Move move);
+
+	template<Color color>
+	void play_null();
+
+	template<Color color>
+	void undo_null();
 };

@@ -264,6 +264,26 @@ void Position::undo(Move move) {
 	side = ~side;
 }
 
+template<Color color>
+void Position::play_null() {
+	PositionState next_state = {};
+	next_state.from_to = state_history.peek().from_to;
+	next_state.captured = NO_PIECE;
+	next_state.hash = state_history.peek().hash;
+	next_state.fifty_move_rule = state_history.peek().fifty_move_rule + 1;
+	next_state.ep_square = NO_SQUARE;
+
+	next_state.hash ^= ZOBRIST_COLOR[~color];
+	next_state.hash ^= ZOBRIST_COLOR[color];
+
+	state_history.push(next_state);
+}
+
+template<Color color>
+void Position::undo_null() {
+	state_history.pop();
+}
+
 template void Position::place_piece<Position::ENABLE_HASH_UPDATE>(Piece piece, Square square);
 template void Position::place_piece<Position::DISABLE_HASH_UPDATE>(Piece piece, Square square);
 
@@ -278,3 +298,9 @@ template void Position::play<BLACK>(Move move);
 
 template void Position::undo<WHITE>(Move move);
 template void Position::undo<BLACK>(Move move);
+
+template void Position::play_null<WHITE>();
+template void Position::play_null<BLACK>();
+
+template void Position::undo_null<WHITE>();
+template void Position::undo_null<BLACK>();
