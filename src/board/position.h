@@ -73,6 +73,12 @@ public:
 	[[nodiscard]] inline Bitboard from_to() const { return state_history.peek().from_to; }
 	[[nodiscard]] inline Color turn() const { return side; }
 
+	enum Repetition : i32 {
+		TWO_FOLD,
+		THREE_FOLD
+	};
+	[[nodiscard]] bool has_repetition(Repetition fold = TWO_FOLD);
+
 	template<Color color>
 	[[nodiscard]] inline bool king_and_oo_rook_not_moved() const {
 		if constexpr (color == WHITE) return !(from_to() & PositionState::WHITE_OO_BANNED_MASK);
