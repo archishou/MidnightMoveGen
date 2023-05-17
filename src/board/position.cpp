@@ -46,7 +46,6 @@ template<bool update_hash>
 void Position::move_piece(Square from, Square to) {
 	Piece piece = piece_at(from);
 	remove_piece<update_hash>(from);
-	remove_piece<DISABLE_HASH_UPDATE>(to);
 	place_piece<update_hash>(piece, to);
 }
 
@@ -182,6 +181,7 @@ void Position::play(Move move) {
 	next_state.hash ^= ZOBRIST_EP_SQUARE[state_history.peek().ep_square];
 	state_history.push(next_state);
 
+	if (move.type() & CAPTURE_TYPE && move.type() != ENPASSANT) remove_piece<ENABLE_HASH_UPDATE>(move.to());
 	move_piece<ENABLE_HASH_UPDATE>(move.from(), move.to());
 
 	MoveType type = move.type();
