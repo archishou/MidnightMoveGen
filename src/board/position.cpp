@@ -46,7 +46,7 @@ template<bool update_hash>
 void Position::move_piece(Square from, Square to) {
 	Piece piece = piece_at(from);
 	remove_piece<update_hash>(from);
-	remove_piece<update_hash>(to);
+	remove_piece<DISABLE_HASH_UPDATE>(to);
 	place_piece<update_hash>(piece, to);
 }
 
@@ -116,6 +116,8 @@ void Position::set_fen(const std::string& fen_string) {
 
 	side = player == "w" ? WHITE : BLACK;
 
+	state_history.top().hash ^= ZOBRIST_COLOR[side];
+
 	Square square = a8;
 
 	for (char ch : position) {
@@ -131,6 +133,7 @@ void Position::set_fen(const std::string& fen_string) {
 		else if (c == 'k') 	state_history.top().from_to &= ~PositionState::BLACK_OO_BANNED_MASK;
 		else if (c == 'q') 	state_history.top().from_to &= ~PositionState::BLACK_OOO_BANNED_MASK;
 	}
+	state_history.top().hash ^= ZOBRIST_CASTLING_RIGHTS[castling_state(state_history.top().from_to)];
 
 	if (en_passant.size() > 1) {
 		auto s = create_square(File(en_passant[0] - 'a'), Rank(en_passant[1] - '1'));
@@ -138,6 +141,7 @@ void Position::set_fen(const std::string& fen_string) {
 	} else {
 		state_history.top().ep_square = NO_SQUARE;
 	}
+	state_history.top().hash ^= ZOBRIST_EP_SQUARE[state_history.top().ep_square];
 }
 
 std::ostream& operator << (std::ostream& os, const Position& p) {
@@ -175,6 +179,7 @@ void Position::play(Move move) {
 	next_state.hash ^= ZOBRIST_COLOR[color];
 	next_state.hash ^= ZOBRIST_CASTLING_RIGHTS[castling_state(state_history.peek().from_to)];
 	next_state.hash ^= ZOBRIST_CASTLING_RIGHTS[castling_state(next_state.from_to)];
+	next_state.hash ^= ZOBRIST_EP_SQUARE[state_history.peek().ep_square];
 	state_history.push(next_state);
 
 	move_piece<ENABLE_HASH_UPDATE>(move.from(), move.to());
@@ -218,6 +223,7 @@ void Position::play(Move move) {
 			break;
 		default: break;
 	}
+	state_history.top().hash ^= ZOBRIST_EP_SQUARE[state_history.peek().ep_square];
 	side = ~side;
 }
 
