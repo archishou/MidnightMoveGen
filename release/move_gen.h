@@ -8,7 +8,7 @@
 #include <sstream>
 #include "iostream"
 
-namespace MidnightMoveGen {
+namespace Midnight {
 
 /* ------------------------ DEFINE UNIVERSAL TYPES ------------------------ */
 using u8 = std::uint8_t;
@@ -61,7 +61,7 @@ public:
 		data[length++] = std::move(constructed_element);
 	}
 
-	[[nodiscard]] inline T pop() { return data[length-- -1]; }
+	inline T pop() { return data[length-- -1]; }
 
 	[[nodiscard]] inline T peek() const { return data[length - 1]; }
 	[[nodiscard]] inline T& top() { return data[length - 1]; }
