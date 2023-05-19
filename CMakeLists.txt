@@ -4,7 +4,7 @@ project(MidnightMoveGen)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "-Wno-deprecated")
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_CXX_FLAGS "-fconstexpr-steps=900000000")
 else()
     set(CMAKE_CXX_FLAGS "-fconstexpr-ops-limit=900000000")
