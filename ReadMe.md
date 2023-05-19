@@ -2,7 +2,9 @@
 
 ### Performance
 
-Midnight MoveGen is a fully legal C++ move generator.
+Midnight MoveGen is a fully legal C++ move generator. Taking advantage of it requires only including the single header file located in release/move_gen.h
+
+From there, everything is available in the MidnightMoveGen namespace.
 
 Speed tested on a Mac M1 Pro. 
 No hash-table or threading used.
