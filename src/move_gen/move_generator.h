@@ -365,8 +365,7 @@ MoveList<color, move_gen_type>::MoveList(Position &board) : board_{board} {
 
 	push_check_evasions(data, danger);
 
-	Bitboard checkers{}, pinned{};
-	std::tie(checkers, pinned) = generate_checkers_and_pinned(data);
+	const auto [checkers, pinned] = generate_checkers_and_pinned(data);
 
 	Bitboard capture_mask, quiet_mask;
 	switch (pop_count(checkers)) {
